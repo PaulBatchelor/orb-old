@@ -2,13 +2,18 @@ cmake_minimum_required(VERSION 3.4.1)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -O3 -DNO_LIBSNDFILE")
 
-include_directories(sp 
+include_directories(
     soundpipe/lib/faust/ 
     soundpipe/lib/fft/
     soundpipe/lib/kissfft/
     soundpipe/lib/inih
     soundpipe/h
     )
+
+
+add_library(native-audio-jni SHARED
+     src/main/cpp/native-audio-jni.c 
+ )
 
 add_library( # Sets the name of the library.
              native-lib
@@ -158,11 +163,16 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
-target_link_libraries( # Specifies the target library.
-                       native-lib
+target_link_libraries( native-audio-jni
                        soundpipe 
                        OpenSLES
+                       android
+                       log)
+
+target_link_libraries( native-lib
+                       android
                         
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} )
+                       ${log-lib} 
+                       )
