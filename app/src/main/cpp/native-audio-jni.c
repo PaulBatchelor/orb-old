@@ -59,6 +59,7 @@
 
 // for soundpipe 
 #include "soundpipe.h"
+#include "synth.h"
 
 // engine interfaces
 static SLObjectItf engineObject = NULL;
@@ -136,47 +137,33 @@ typedef struct {
     unsigned bufsize;
     unsigned nextsize;
     int run;
+    sp_synth synth;
 } soundpipe;
-
+\
 static soundpipe g_sp;
 
-static void create_soundpipe(int sr, int bufsize, FILE *fp)
+static void create_soundpipe(int sr, int bufsize)
 {
     uint32_t seed = time(NULL);
     /*TODO: make this sp variable not sp */
-    soundpipe *sp = &g_sp;
-    sp_create(&sp->sp);
-    sp->sp->sr = sr;
-    sp_srand(sp->sp, seed);
-    srand(1234568);
-    LOGD("the random value is %d\n", sp_rand(sp->sp));
-    sp_ftbl_create(sp->sp, &sp->ft, 8192);
-    sp_gen_sine(sp->sp, sp->ft);
-    sp_fosc_create(&sp->fosc);
-    sp_fosc_init(sp->sp, sp->fosc, sp->ft);
+    soundpipe *sound = &g_sp;
+    sp_create(&sound->sp);
+    sound->sp->sr = sr;
+    sp_srand(sound->sp, seed);
 
-    sp_randh_create(&sp->randh);
-    sp_randh_init(sp->sp, sp->randh);
-    sp->randh->min = 300;
-    sp->randh->max = 800;
-    sp->randh->freq = 6;
-
-    sp_revsc_create(&sp->rev);
-    sp_revsc_init(sp->sp, sp->rev);
-
-    /* plumber stuff */
-    
+    sp_synth_create(sound->sp, &sound->synth);
+    sp_synth_init(sound->sp, &sound->synth);
 
     /* buffer stuff */
-    sp->bufsize = bufsize * 1;
-    sp->nextsize = sp->bufsize * sizeof(short);
-    sp->buf0 = malloc(sizeof(short) * sp->bufsize);
-    memset(sp->buf0, 0, sizeof(short) * sp->bufsize);
-    sp->buf1 = malloc(sizeof(short) * sp->bufsize);
-    memset(sp->buf1, 0, sizeof(short) * sp->bufsize);
-    sp->nextbuf = sp->buf1;
-    sp->whichbuf = 1;
-    sp->run = 1;
+    sound->bufsize = bufsize;
+    sound->nextsize = sound->bufsize * sizeof(short);
+    sound->buf0 = malloc(sizeof(short) * sound->bufsize);
+    memset(sound->buf0, 0, sizeof(short) * sound->bufsize);
+    sound->buf1 = malloc(sizeof(short) * sound->bufsize);
+    memset(sound->buf1, 0, sizeof(short) * sound->bufsize);
+    sound->nextbuf = sound->buf1;
+    sound->whichbuf = 1;
+    sound->run = 1;
 }
 
 
@@ -197,31 +184,10 @@ static int android_close(void* cookie) {
   return 0;
 }
 
-jboolean Java_com_example_nativeaudio_NativeAudio_createSporth(JNIEnv* env, jclass clazz,
-        jobject assetManager, jint sampleRate, jint bufSize, jstring filename) {
-
+jboolean Java_com_example_paul_androidsoundpipe_MainActivity_createSoundpipe(JNIEnv* env, jclass clazz,
+        jobject assetManager, jint sampleRate, jint bufSize) {
     soundpipe *sp = &g_sp;
-    // convert Java string to UTF-8
-    const char *utf8 = (*env)->GetStringUTFChars(env, filename, NULL);
-    assert(NULL != utf8);
-
-
-    // use asset manager to open asset by filename
-    AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
-    assert(NULL != mgr);
-    AAsset* asset = AAssetManager_open(mgr, "playwithtoys.sp", AASSET_MODE_UNKNOWN);
-
-    // release the Java string and UTF-8
-    (*env)->ReleaseStringUTFChars(env, filename, utf8);
-    // the asset might not be found
-    if (NULL == asset) {
-        LOGD("COULDNT FIND IT");
-        return JNI_FALSE;
-    }
-
-    FILE *fp = funopen(asset, android_read, android_write, android_seek, android_close);
-    create_soundpipe(sampleRate, bufSize, fp);
-
+    create_soundpipe(sampleRate, bufSize);
     return JNI_TRUE;
 }
 
@@ -241,9 +207,9 @@ static void render_buf() {
         mybuf = sp->buf0;
     } else {
         sp->whichbuf = 0;
-        mybuf = sp->buf1;
+            mybuf = sp->buf1;
     }
-
+    sp_synth_compute(sp->sp, &sp->synth, sp->bufsize, mybuf);
 }
 
 static void swap_buf() { 
@@ -258,11 +224,7 @@ static void swap_buf() {
 static void destroy_soundpipe()
 {
     soundpipe *sp = &g_sp;
-    sp_ftbl_destroy(&sp->ft);
-    sp_fosc_destroy(&sp->fosc);
-    sp_randh_destroy(&sp->randh);
-    sp_revsc_destroy(&sp->rev);
-
+    sp_synth_destroy(sp->sp, &sp->synth);
     sp_destroy(&sp->sp);
 
     free(sp->buf0);
@@ -399,7 +361,8 @@ void bqRecorderCallback(SLAndroidSimpleBufferQueueItf bq, void *context)
 
 
 // create the engine and output mix objects
-void Java_com_example_nativeaudio_NativeAudio_createEngine(JNIEnv* env, jclass clazz)
+void 
+Java_com_example_paul_androidsoundpipe_MainActivity_createEngine(JNIEnv* env, jclass clazz)
 {
     SLresult result;
 
@@ -447,7 +410,7 @@ void Java_com_example_nativeaudio_NativeAudio_createEngine(JNIEnv* env, jclass c
 
 
 // create buffer queue audio player
-void Java_com_example_nativeaudio_NativeAudio_createBufferQueueAudioPlayer(JNIEnv* env,
+void Java_com_example_paul_androidsoundpipe_MainActivity_createBufferQueueAudioPlayer(JNIEnv* env,
         jclass clazz, jint sampleRate, jint bufSize)
 {
     SLresult result;
@@ -543,7 +506,7 @@ void Java_com_example_nativeaudio_NativeAudio_createBufferQueueAudioPlayer(JNIEn
 
 
 // create URI audio player
-jboolean Java_com_example_nativeaudio_NativeAudio_createUriAudioPlayer(JNIEnv* env, jclass clazz,
+jboolean Java_com_example_paul_androidsoundpipe_MainActivity_createUriAudioPlayer(JNIEnv* env, jclass clazz,
         jstring uri)
 {
     SLresult result;
@@ -610,7 +573,7 @@ jboolean Java_com_example_nativeaudio_NativeAudio_createUriAudioPlayer(JNIEnv* e
 
 // set the playing state for the URI audio player
 // to PLAYING (true) or PAUSED (false)
-void Java_com_example_nativeaudio_NativeAudio_setPlayingUriAudioPlayer(JNIEnv* env,
+void Java_com_example_paul_androidsoundpipe_MainActivity_setPlayingUriAudioPlayer(JNIEnv* env,
         jclass clazz, jboolean isPlaying)
 {
     SLresult result;
@@ -629,7 +592,7 @@ void Java_com_example_nativeaudio_NativeAudio_setPlayingUriAudioPlayer(JNIEnv* e
 
 
 // set the whole file looping state for the URI audio player
-void Java_com_example_nativeaudio_NativeAudio_setLoopingUriAudioPlayer(JNIEnv* env,
+void Java_com_example_paul_androidsoundpipe_MainActivity_setLoopingUriAudioPlayer(JNIEnv* env,
         jclass clazz, jboolean isLooping)
 {
     SLresult result;
@@ -659,7 +622,7 @@ static SLMuteSoloItf getMuteSolo()
         return bqPlayerMuteSolo;
 }
 
-void Java_com_example_nativeaudio_NativeAudio_setChannelMuteUriAudioPlayer(JNIEnv* env,
+void Java_com_example_paul_androidsoundpipe_MainActivity_setChannelMuteUriAudioPlayer(JNIEnv* env,
         jclass clazz, jint chan, jboolean mute)
 {
     SLresult result;
@@ -671,7 +634,7 @@ void Java_com_example_nativeaudio_NativeAudio_setChannelMuteUriAudioPlayer(JNIEn
     }
 }
 
-void Java_com_example_nativeaudio_NativeAudio_setChannelSoloUriAudioPlayer(JNIEnv* env,
+void Java_com_example_paul_androidsoundpipe_MainActivity_setChannelSoloUriAudioPlayer(JNIEnv* env,
         jclass clazz, jint chan, jboolean solo)
 {
     SLresult result;
@@ -683,7 +646,7 @@ void Java_com_example_nativeaudio_NativeAudio_setChannelSoloUriAudioPlayer(JNIEn
     }
 }
 
-int Java_com_example_nativeaudio_NativeAudio_getNumChannelsUriAudioPlayer(JNIEnv* env, jclass clazz)
+int Java_com_example_paul_androidsoundpipe_MainActivity_getNumChannelsUriAudioPlayer(JNIEnv* env, jclass clazz)
 {
     SLuint8 numChannels;
     SLresult result;
@@ -714,7 +677,7 @@ static SLVolumeItf getVolume()
         return bqPlayerVolume;
 }
 
-void Java_com_example_nativeaudio_NativeAudio_setVolumeUriAudioPlayer(JNIEnv* env, jclass clazz,
+void Java_com_example_paul_androidsoundpipe_MainActivity_setVolumeUriAudioPlayer(JNIEnv* env, jclass clazz,
         jint millibel)
 {
     SLresult result;
@@ -726,7 +689,7 @@ void Java_com_example_nativeaudio_NativeAudio_setVolumeUriAudioPlayer(JNIEnv* en
     }
 }
 
-void Java_com_example_nativeaudio_NativeAudio_setMuteUriAudioPlayer(JNIEnv* env, jclass clazz,
+void Java_com_example_paul_androidsoundpipe_MainActivity_setMuteUriAudioPlayer(JNIEnv* env, jclass clazz,
         jboolean mute)
 {
     SLresult result;
@@ -738,7 +701,9 @@ void Java_com_example_nativeaudio_NativeAudio_setMuteUriAudioPlayer(JNIEnv* env,
     }
 }
 
-void Java_com_example_nativeaudio_NativeAudio_enableStereoPositionUriAudioPlayer(JNIEnv* env,
+//Java_com_example_paul_androidsoundpipe_MainActivity_stringFromJNI(
+
+void Java_com_example_paul_androidsoundpipe_MainActivity_enableStereoPositionUriAudioPlayer(JNIEnv* env,
         jclass clazz, jboolean enable)
 {
     SLresult result;
@@ -750,7 +715,7 @@ void Java_com_example_nativeaudio_NativeAudio_enableStereoPositionUriAudioPlayer
     }
 }
 
-void Java_com_example_nativeaudio_NativeAudio_setStereoPositionUriAudioPlayer(JNIEnv* env,
+void Java_com_example_paul_androidsoundpipe_MainActivity_setStereoPositionUriAudioPlayer(JNIEnv* env,
         jclass clazz, jint permille)
 {
     SLresult result;
@@ -763,7 +728,7 @@ void Java_com_example_nativeaudio_NativeAudio_setStereoPositionUriAudioPlayer(JN
 }
 
 // enable reverb on the buffer queue player
-jboolean Java_com_example_nativeaudio_NativeAudio_enableReverb(JNIEnv* env, jclass clazz,
+jboolean Java_com_example_paul_androidsoundpipe_MainActivity_enableReverb(JNIEnv* env, jclass clazz,
         jboolean enabled)
 {
     SLresult result;
@@ -789,7 +754,7 @@ jboolean Java_com_example_nativeaudio_NativeAudio_enableReverb(JNIEnv* env, jcla
     return JNI_TRUE;
 }
 
-jboolean Java_com_example_nativeaudio_NativeAudio_startYourEngines(JNIEnv* env, jclass clazz)
+jboolean Java_com_example_paul_androidsoundpipe_MainActivity_startYourEngines(JNIEnv* env, jclass clazz)
 {
     if (pthread_mutex_trylock(&audioEngineLock)) {
         // If we could not acquire audio engine lock, reject this request and client should re-try
@@ -807,7 +772,7 @@ jboolean Java_com_example_nativeaudio_NativeAudio_startYourEngines(JNIEnv* env, 
     return JNI_TRUE;
 }
 // select the desired clip and play count, and enqueue the first buffer if idle
-jboolean Java_com_example_nativeaudio_NativeAudio_selectClip(JNIEnv* env, jclass clazz, jint which,
+jboolean Java_com_example_paul_androidsoundpipe_MainActivity_selectClip(JNIEnv* env, jclass clazz, jint which,
         jint count)
 {
     if (pthread_mutex_trylock(&audioEngineLock)) {
@@ -864,7 +829,7 @@ jboolean Java_com_example_nativeaudio_NativeAudio_selectClip(JNIEnv* env, jclass
 
 
 // create asset audio player
-jboolean Java_com_example_nativeaudio_NativeAudio_createAssetAudioPlayer(JNIEnv* env, jclass clazz,
+jboolean Java_com_example_paul_androidsoundpipe_MainActivity_createAssetAudioPlayer(JNIEnv* env, jclass clazz,
         jobject assetManager, jstring filename)
 {
     SLresult result;
@@ -943,7 +908,7 @@ jboolean Java_com_example_nativeaudio_NativeAudio_createAssetAudioPlayer(JNIEnv*
 }
 
 // set the playing state for the asset audio player
-void Java_com_example_nativeaudio_NativeAudio_setPlayingAssetAudioPlayer(JNIEnv* env,
+void Java_com_example_paul_androidsoundpipe_MainActivity_setPlayingAssetAudioPlayer(JNIEnv* env,
         jclass clazz, jboolean isPlaying)
 {
     SLresult result;
@@ -962,7 +927,7 @@ void Java_com_example_nativeaudio_NativeAudio_setPlayingAssetAudioPlayer(JNIEnv*
 
 // create audio recorder: recorder is not in fast path
 //    like to avoid excessive re-sampling while playing back from Hello & Android clip
-jboolean Java_com_example_nativeaudio_NativeAudio_createAudioRecorder(JNIEnv* env, jclass clazz)
+jboolean Java_com_example_paul_androidsoundpipe_MainActivity_createAudioRecorder(JNIEnv* env, jclass clazz)
 {
     SLresult result;
 
@@ -1016,7 +981,7 @@ jboolean Java_com_example_nativeaudio_NativeAudio_createAudioRecorder(JNIEnv* en
 
 
 // set the recording state for the audio recorder
-void Java_com_example_nativeaudio_NativeAudio_startRecording(JNIEnv* env, jclass clazz)
+void Java_com_example_paul_androidsoundpipe_MainActivity_startRecording(JNIEnv* env, jclass clazz)
 {
     SLresult result;
 
@@ -1051,7 +1016,7 @@ void Java_com_example_nativeaudio_NativeAudio_startRecording(JNIEnv* env, jclass
 
 
 // shut down the native audio system
-void Java_com_example_nativeaudio_NativeAudio_shutdown(JNIEnv* env, jclass clazz)
+void Java_com_example_paul_androidsoundpipe_MainActivity_shutdown(JNIEnv* env, jclass clazz)
 {
 
     // destroy buffer queue audio player object, and invalidate all associated interfaces
@@ -1107,6 +1072,6 @@ void Java_com_example_nativeaudio_NativeAudio_shutdown(JNIEnv* env, jclass clazz
         engineEngine = NULL;
     }
 
-    destroy_soundpipe();
+    //destroy_soundpipe();
     pthread_mutex_destroy(&audioEngineLock);
 }

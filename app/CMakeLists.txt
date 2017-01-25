@@ -8,11 +8,13 @@ include_directories(
     soundpipe/lib/kissfft/
     soundpipe/lib/inih
     soundpipe/h
+    src/main/cpp/
     )
 
 
 add_library(native-audio-jni SHARED
      src/main/cpp/native-audio-jni.c 
+     src/main/cpp/synth.c 
  )
 
 add_library( # Sets the name of the library.
