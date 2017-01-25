@@ -611,3 +611,17 @@ void Java_com_example_paul_androidsoundpipe_MainActivity_shutdown(JNIEnv* env, j
     //destroy_soundpipe();
     pthread_mutex_destroy(&audioEngineLock);
 }
+
+void Java_com_example_paul_androidsoundpipe_MainActivity_setX(JNIEnv* env, jclass clazz, 
+        jfloat x)
+{
+    sp_synth *synth = &g_sp.synth; 
+    synth->pos_x = MIN(x, 1.0); 
+}
+
+void Java_com_example_paul_androidsoundpipe_MainActivity_setY(JNIEnv* env, jclass clazz, 
+        jfloat y)
+{
+    sp_synth *synth = &g_sp.synth; 
+    synth->pos_y = MIN(y, 1.0); 
+}

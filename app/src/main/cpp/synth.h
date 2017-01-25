@@ -17,6 +17,8 @@ typedef struct {
     SPFLOAT pos_x;
     SPFLOAT pos_y;
     sp_port *port;
+    sp_port *port_x;
+    sp_port *port_y;
 } sp_synth;
 
 int sp_synth_compute(sp_data *sp, sp_synth *synth, int bufsize, short *buf);

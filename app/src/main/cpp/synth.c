@@ -18,6 +18,8 @@ int sp_synth_create(sp_data *sp, sp_synth *synth)
     sp_trand_create(&synth->tr_mod);
     sp_trand_create(&synth->tr_car);
     sp_port_create(&synth->port);
+    sp_port_create(&synth->port_x);
+    sp_port_create(&synth->port_y);
     return SP_OK;
 }
 
@@ -38,6 +40,8 @@ int sp_synth_destroy(sp_data *sp, sp_synth *synth)
     sp_trand_destroy(&synth->tr_mod);
     sp_trand_destroy(&synth->tr_car);
     sp_port_destroy(&synth->port);
+    sp_port_destroy(&synth->port_x);
+    sp_port_destroy(&synth->port_y);
     return SP_OK;
 }
 
@@ -88,47 +92,51 @@ int sp_synth_init(sp_data *sp, sp_synth *synth)
     synth->pos_x = 0.5;
     synth->pos_y = 0.5;
     sp_port_init(sp, synth->port, 0.01);
+    sp_port_init(sp, synth->port_x, 0.001);
+    sp_port_init(sp, synth->port_y, 0.001);
     return SP_OK;
 }
 
 int sp_synth_compute(sp_data *sp, sp_synth *synth, int bufsize, short *buf)
 {
-    SPFLOAT tmp[9];
+    SPFLOAT tmp[10];
     int i;
     for(i = 0; i < bufsize ; i++) {
-        tmp[4] = 0;
-        synth->clk->bpm = 60 + (synth->pos_x * 160);
-        sp_clock_compute(sp, synth->clk, &tmp[4], &tmp[0]);
-        synth->mt1->prob = 0.3 + (synth->pos_x * 0.5);
+        sp_port_compute(sp, synth->port_x, &synth->pos_x, &tmp[4]);
+        sp_port_compute(sp, synth->port_y, &synth->pos_y, &tmp[5]);
+        tmp[6] = 0;
+        synth->clk->bpm = 60 + (tmp[4] * 160);
+        sp_clock_compute(sp, synth->clk, &tmp[6], &tmp[0]);
+        synth->mt1->prob = 0.3 + (tmp[4] * 0.5);
         sp_maygate_compute(sp, synth->mt1, &tmp[0], &tmp[1]);
-        sp_tseq_compute(sp, synth->tseq, &tmp[1], &tmp[4]);
-        tmp[4] += 48;
-        synth->port->htime = 0.03 + (synth->pos_x * -0.0295);
-        sp_port_compute(sp, synth->port, &tmp[4], &tmp[2]);
-        tmp[4] = sp_midi2cps(tmp[2]);
-        synth->fm->freq = tmp[4];
-        sp_trand_compute(sp, synth->tr_car, &tmp[1], &tmp[4]);
-        tmp[4] = floor(tmp[4]);
-        synth->fm->car = tmp[4];
-        sp_trand_compute(sp, synth->tr_mod, &tmp[1], &tmp[4]);
-        tmp[4] = floor(tmp[4]);
-        synth->fm->mod = tmp[4];
-        synth->fm->indx = 4 + (synth->pos_y * -4);
-        synth->fm->amp = 0.7 + (synth->pos_y * -0.69);
-        sp_fosc_compute(sp, synth->fm, NULL, &tmp[4]);
-        sp_tenvx_compute(sp, synth->env1, &tmp[1], &tmp[5]);
-        tmp[4] = tmp[5] * tmp[4];
-        tmp[5] = tmp[2];
-        tmp[5] += -12;
-        tmp[5] = sp_midi2cps(tmp[5]);
-        *synth->saw->freq = tmp[5];
-        sp_blsaw_compute(sp, synth->saw, NULL, &tmp[5]);
-        sp_moogladder_compute(sp, synth->moog, &tmp[5], &tmp[6]);
-        sp_maygate_compute(sp, synth->mt2, &tmp[1], &tmp[5]);
-        sp_tenvx_compute(sp, synth->env2, &tmp[5], &tmp[7]);
-        tmp[5] = tmp[6] * tmp[7];
-        tmp[4] = tmp[4] + tmp[5];
-        buf[i] = tmp[4] * 32767;
+        sp_tseq_compute(sp, synth->tseq, &tmp[1], &tmp[6]);
+        tmp[6] += 48;
+        synth->port->htime = 0.03 + (tmp[4] * -0.0295);
+        sp_port_compute(sp, synth->port, &tmp[6], &tmp[2]);
+        tmp[6] = sp_midi2cps(tmp[2]);
+        synth->fm->freq = tmp[6];
+        sp_trand_compute(sp, synth->tr_car, &tmp[1], &tmp[6]);
+        tmp[6] = floor(tmp[6]);
+        synth->fm->car = tmp[6];
+        sp_trand_compute(sp, synth->tr_mod, &tmp[1], &tmp[6]);
+        tmp[6] = floor(tmp[6]);
+        synth->fm->mod = tmp[6];
+        synth->fm->indx = 4 + (tmp[5] * -4);
+        synth->fm->amp = 0.7 + (tmp[5] * -0.69);
+        sp_fosc_compute(sp, synth->fm, NULL, &tmp[6]);
+        sp_tenvx_compute(sp, synth->env1, &tmp[1], &tmp[7]);
+        tmp[6] = tmp[7] * tmp[6];
+        tmp[7] = tmp[2];
+        tmp[7] += -12;
+        tmp[7] = sp_midi2cps(tmp[7]);
+        *synth->saw->freq = tmp[7];
+        sp_blsaw_compute(sp, synth->saw, NULL, &tmp[7]);
+        sp_moogladder_compute(sp, synth->moog, &tmp[7], &tmp[8]);
+        sp_maygate_compute(sp, synth->mt2, &tmp[1], &tmp[7]);
+        sp_tenvx_compute(sp, synth->env2, &tmp[7], &tmp[9]);
+        tmp[7] = tmp[8] * tmp[9];
+        tmp[6] = tmp[6] + tmp[7];
+        buf[i] = tmp[6] * 32767;
     }
     return SP_OK;
 }

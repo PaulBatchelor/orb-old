@@ -8,6 +8,10 @@ import android.os.Build;
 import android.content.Context;
 import android.media.AudioManager;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.MotionEvent;
+import android.util.DisplayMetrics;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,16 +21,14 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-audio-jni");
     }
 
+    static int width, height;
     static AssetManager assetManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+        setContentView(R.layout.activity_main);
 
         assetManager = getAssets();
 
@@ -45,6 +47,13 @@ public class MainActivity extends AppCompatActivity {
         createBufferQueueAudioPlayer(sampleRate, bufSize);
         createSoundpipe(assetManager, sampleRate, bufSize);
         startYourEngines();
+
+        Context myContext;
+        myContext = getApplicationContext();
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((WindowManager) myContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
+        width = metrics.widthPixels;
+        height = metrics.heightPixels;
     }
 
     @Override
@@ -54,10 +63,20 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    public boolean onTouchEvent(MotionEvent e) {
+        float x = e.getX() / width;
+        float y = e.getY() / height;
+        setX(x);
+        setY(y);
+        return true;
+    }
+
     public native String stringFromJNI();
     public static native void createEngine();
     public static native void createBufferQueueAudioPlayer(int sampleRate, int samplesPerBuf);
     public static native void createSoundpipe(AssetManager assetManager, int sampleRate, int samplesPerBuf);
     public static native void shutdown();
     public static native boolean startYourEngines();
+    public static native void setX(float x);
+    public static native void setY(float y);
 }
