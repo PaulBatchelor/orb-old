@@ -1,13 +1,14 @@
-# Sets the minimum version of CMake required to build the native
-# library. You should either keep the default value or only pass a
-# value of 3.4.0 or lower.
-
 cmake_minimum_required(VERSION 3.4.1)
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds it for you.
-# Gradle automatically packages shared libraries with your APK.
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -O3 -DNO_LIBSNDFILE")
+
+include_directories(sp 
+    soundpipe/lib/faust/ 
+    soundpipe/lib/fft/
+    soundpipe/lib/kissfft/
+    soundpipe/lib/inih
+    soundpipe/h
+    )
 
 add_library( # Sets the name of the library.
              native-lib
@@ -20,11 +21,135 @@ add_library( # Sets the name of the library.
              # file are automatically included.
              src/main/cpp/native-lib.cpp )
 
-# Searches for a specified prebuilt library and stores the path as a
-# variable. Because system libraries are included in the search path by
-# default, you only need to specify the name of the public NDK library
-# you want to add. CMake verifies that the library exists before
-# completing its build.
+add_library(
+    soundpipe SHARED
+    soundpipe/lib/faust/CUI.h
+    soundpipe/lib/kissfft/kiss_fftr.h
+    soundpipe/lib/kissfft/kiss_fft.h
+    soundpipe/lib/kissfft/kiss_fft.c
+    soundpipe/lib/kissfft/kiss_fftr.c
+    soundpipe/lib/inih/ini.h
+    soundpipe/lib/inih/ini.c
+    soundpipe/lib/fft/fft.c
+    soundpipe/h/soundpipe.h
+    soundpipe/modules/adsr.c
+    soundpipe/modules/allpass.c
+    soundpipe/modules/atone.c
+    soundpipe/modules/autowah.c
+    soundpipe/modules/bal.c
+    soundpipe/modules/bar.c
+    soundpipe/modules/base.c
+    soundpipe/modules/biquad.c
+    soundpipe/modules/biscale.c
+    soundpipe/modules/bitcrush.c
+    soundpipe/modules/blsaw.c
+    soundpipe/modules/blsquare.c
+    soundpipe/modules/bltriangle.c
+    soundpipe/modules/butbp.c
+    soundpipe/modules/butbr.c
+    soundpipe/modules/buthp.c
+    soundpipe/modules/butlp.c
+    soundpipe/modules/clip.c
+    soundpipe/modules/clock.c
+    soundpipe/modules/comb.c
+    soundpipe/modules/compressor.c
+    soundpipe/modules/conv.c
+    soundpipe/modules/count.c
+    soundpipe/modules/crossfade.c
+    soundpipe/modules/dcblock.c
+    soundpipe/modules/delay.c
+    soundpipe/modules/diode.c
+    soundpipe/modules/dist.c
+    soundpipe/modules/dmetro.c
+    soundpipe/modules/drip.c
+    soundpipe/modules/dtrig.c
+    soundpipe/modules/dust.c
+    soundpipe/modules/eqfil.c
+    soundpipe/modules/expon.c
+    soundpipe/modules/fftwrapper.c
+    soundpipe/modules/fof.c
+    soundpipe/modules/fofilt.c
+    soundpipe/modules/fog.c
+    soundpipe/modules/fold.c
+    soundpipe/modules/foo.c
+    soundpipe/modules/fosc.c
+    soundpipe/modules/ftbl.c
+    soundpipe/modules/gbuzz.c
+    soundpipe/modules/hilbert.c
+    soundpipe/modules/in.c
+    soundpipe/modules/incr.c
+    soundpipe/modules/jcrev.c
+    soundpipe/modules/jitter.c
+    soundpipe/modules/line.c
+    soundpipe/modules/lpf18.c
+    soundpipe/modules/maygate.c
+    soundpipe/modules/metro.c
+    soundpipe/modules/mincer.c
+    soundpipe/modules/mode.c
+    soundpipe/modules/moogladder.c
+    soundpipe/modules/noise.c
+    soundpipe/modules/nsmp.c
+    soundpipe/modules/osc.c
+    soundpipe/modules/oscmorph.c
+    soundpipe/modules/padsynth.c
+    soundpipe/modules/pan2.c
+    soundpipe/modules/panst.c
+    soundpipe/modules/pareq.c
+    soundpipe/modules/paulstretch.c
+    soundpipe/modules/pdhalf.c
+    soundpipe/modules/peaklim.c
+    soundpipe/modules/phaser.c
+    soundpipe/modules/phasor.c
+    soundpipe/modules/pinknoise.c
+    soundpipe/modules/pitchamdf.c
+    soundpipe/modules/pluck.c
+    soundpipe/modules/port.c
+    soundpipe/modules/posc3.c
+    soundpipe/modules/progress.c
+    soundpipe/modules/prop.c
+    soundpipe/modules/pshift.c
+    soundpipe/modules/ptrack.c
+    soundpipe/modules/randh.c
+    soundpipe/modules/randi.c
+    soundpipe/modules/randmt.c
+    soundpipe/modules/random.c
+    soundpipe/modules/reson.c
+    soundpipe/modules/reverse.c
+    soundpipe/modules/revsc.c
+    soundpipe/modules/rms.c
+    soundpipe/modules/rpt.c
+    soundpipe/modules/samphold.c
+    soundpipe/modules/saturator.c
+    soundpipe/modules/scale.c
+    soundpipe/modules/scrambler.c
+    soundpipe/modules/sdelay.c
+    soundpipe/modules/slice.c
+    soundpipe/modules/smoothdelay.c
+    soundpipe/modules/streson.c
+    soundpipe/modules/switch.c
+    soundpipe/modules/tabread.c
+    soundpipe/modules/tadsr.c
+    soundpipe/modules/tblrec.c
+    soundpipe/modules/tbvcf.c
+    soundpipe/modules/tdiv.c
+    soundpipe/modules/tenv.c
+    soundpipe/modules/tenv2.c
+    soundpipe/modules/tenvx.c
+    soundpipe/modules/tevent.c
+    soundpipe/modules/tgate.c
+    soundpipe/modules/thresh.c
+    soundpipe/modules/timer.c
+    soundpipe/modules/tin.c
+    soundpipe/modules/tone.c
+    soundpipe/modules/trand.c
+    soundpipe/modules/tseg.c
+    soundpipe/modules/tseq.c
+    soundpipe/modules/vdelay.c
+    soundpipe/modules/vocoder.c
+    soundpipe/modules/waveset.c
+    soundpipe/modules/wpkorg35.c
+    soundpipe/modules/zitarev.c
+    )
 
 find_library( # Sets the name of the path variable.
               log-lib
@@ -33,13 +158,11 @@ find_library( # Sets the name of the path variable.
               # you want CMake to locate.
               log )
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in the
-# build script, prebuilt third-party libraries, or system libraries.
-
 target_link_libraries( # Specifies the target library.
                        native-lib
-
+                       soundpipe 
+                       OpenSLES
+                        
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib} )
