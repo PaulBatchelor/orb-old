@@ -1,3 +1,6 @@
 [submodule "app/soundpipe"]
 	path = app/soundpipe
 	url = https://www.github.com/paulbatchelor/soundpipe.git
+[submodule "app/nanovg"]
+	path = app/nanovg
+	url = https://github.com/memononen/nanovg
