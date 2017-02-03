@@ -18,4 +18,6 @@ void orb_audio_computei(orb_data *orb, short *buf, int nframes);
 void orb_audio_create(orb_data *orb, int sr);
 void orb_audio_destroy(orb_data *orb);
 void orb_set_vals(orb_data *orb);
-void orb_init(orb_data *orb);
+void orb_synth_set_vals(orb_data *orb);
+void orb_init(orb_data *orb, int sr);
+void orb_destroy(orb_data *orb);

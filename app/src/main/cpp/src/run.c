@@ -5,7 +5,6 @@
 #  include <GL/glew.h>
 #endif
 
-
 #ifdef BUILD_ANDROID
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -55,8 +54,21 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     nvgEndFrame(vg);
 }
 
-void orb_init(orb_data *orb)
+void orb_init(orb_data *orb, int sr)
 {
     orb->x_pos = 0.5;
     orb->y_pos = 0.5;
+    orb->height = 1;
+    orb->width = 1;
+    orb_audio_create(orb, sr);
+}
+
+void orb_destroy(orb_data *orb)
+{
+    orb_audio_destroy(orb);
+}
+
+void orb_set_vals(orb_data *orb)
+{
+    orb_synth_set_vals(orb);
 }

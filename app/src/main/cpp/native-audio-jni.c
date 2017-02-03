@@ -146,11 +146,8 @@ static void create_soundpipe(int sr, int bufsize)
     uint32_t seed = time(NULL);
     /*TODO: make this sp variable not sp */
     soundpipe *sound = &g_sp;
-    sp_create(&sound->sp);
-    sound->sp->sr = sr;
-    sp_srand(sound->sp, seed);
 
-    orb_audio_create(&orb, sr);
+    orb_init(&orb, sr);
 
     /* buffer stuff */
     sound->bufsize = bufsize;
@@ -426,9 +423,9 @@ jfloat x, jfloat y)
     orb_set_vals(&orb);
 }
 
-JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_GL2JNILib_init(JNIEnv * env, jobject obj,  jint width, jint height)
+JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_GL2JNILib_init(JNIEnv * env, 
+    jobject obj,  jint width, jint height)
 {
-    orb_init(&orb);
     orb.width = width;
     orb.height = height;
     setupGraphics(width, height);

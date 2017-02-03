@@ -4,6 +4,18 @@
 #include "soundpipe.h"
 #include "synth.h"
 
+#ifndef MAX
+#define MAX(A, B) (A > B ? A : B)
+#endif
+
+#ifndef MIN
+#define MIN(A, B) (A < B ? A : B)
+#endif
+
+#ifndef CLAMP
+#define CLAMP(N, A, B) (MIN(MAX(N, A), B))
+#endif
+
 static sp_data *sp = NULL;
 
 void orb_audio(orb_data *orb, float **buf, int nframes)
@@ -35,9 +47,9 @@ void orb_audio_destroy(orb_data *orb)
     sp_synth_destroy(sp, orb->synth);
 }
 
-void orb_set_vals(orb_data *orb)
+void orb_synth_set_vals(orb_data *orb)
 {
     sp_synth *synth = orb->synth;
-    synth->pos_x = orb->x_pos;
-    synth->pos_y = orb->y_pos;
+    synth->pos_x = CLAMP(orb->x_pos, 0, 1);
+    synth->pos_y = CLAMP(orb->y_pos, 0, 1);
 }

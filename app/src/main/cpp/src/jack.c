@@ -75,8 +75,6 @@ void orb_start_jack(orb_data *orb, int sr)
     jd.client[0] = jack_client_open (client_name, options, 
         &status, server_name);
 
-    orb_audio_create(orb, sr);
-
     if (jd.client[0] == NULL) {
         fprintf (stderr, "jack_client_open() failed, "
              "status = 0x%2.0x\n", status);
@@ -135,7 +133,6 @@ void orb_start_jack(orb_data *orb, int sr)
 
 void orb_stop_jack(orb_data *orb)
 {
-    orb_audio_destroy(orb);
     free (jd.ports);
     jack_client_close(jd.client[0]);
     free(jd.output_port);

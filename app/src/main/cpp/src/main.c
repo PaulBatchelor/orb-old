@@ -106,7 +106,7 @@ int main()
 	glfwSetTime(0);
 	prevt = glfwGetTime();
 
-    orb_init(&orb);
+    orb_init(&orb, 44100);
     orb_start_jack(&orb, 44100);
 
 	while (!glfwWindowShouldClose(window))
@@ -136,13 +136,13 @@ int main()
         mx = CLAMP(mx / winWidth, 0, 1);
         my = CLAMP(my / winHeight, 0, 1);
 
-
         orb.x_pos = mx;
         orb.y_pos = my;
+
+        orb_set_vals(&orb);
         orb.width = winWidth;
         orb.height = winHeight;
 
-        orb_set_vals(&orb);
         orb_step(vg, &orb);
 
 		nvgEndFrame(vg);
@@ -155,5 +155,6 @@ int main()
 
 	glfwTerminate();
     orb_stop_jack(&orb);
+    orb_destroy(&orb);
 	return 0;
 }
