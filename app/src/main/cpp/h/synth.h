@@ -1,4 +1,9 @@
-typedef struct {
+#ifndef SP_SYNTH_TYPEDEF
+#define SP_SYNTH_TYPEDEF
+typedef struct sp_synth sp_synth;
+#endif
+
+struct sp_synth {
     sp_data *sp;
     sp_ftbl *rnd;
     sp_clock *clk;
@@ -19,9 +24,9 @@ typedef struct {
     sp_port *port;
     sp_port *port_x;
     sp_port *port_y;
-} sp_synth;
+};
 
-int sp_synth_compute(sp_data *sp, sp_synth *synth, int bufsize, short *buf);
+int sp_synth_computei(sp_data *sp, sp_synth *synth, int bufsize, short *buf);
 int sp_synth_create(sp_data *sp, sp_synth *synth);
 int sp_synth_destroy(sp_data *sp, sp_synth *synth);
 int sp_synth_init(sp_data *sp, sp_synth *synth);

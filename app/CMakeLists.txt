@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -O3 -DNO_LIBSNDFILE")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -O3 -DNO_LIBSNDFILE -DBUILD_ANDROID")
 
 include_directories(
     soundpipe/lib/faust/ 
@@ -9,13 +9,17 @@ include_directories(
     soundpipe/lib/inih
     soundpipe/h
     src/main/cpp/
+    src/main/cpp/h
+    nanovg/src
     )
 
 
 add_library(native-audio-jni SHARED
-     src/main/cpp/native-audio-jni.c 
-     src/main/cpp/synth.c 
- )
+    src/main/cpp/native-audio-jni.c 
+    src/main/cpp/src/synth.c 
+    src/main/cpp/src/audio.c 
+    src/main/cpp/src/run.c 
+)
 
 add_library( # Sets the name of the library.
              native-lib
@@ -158,21 +162,31 @@ add_library(
     soundpipe/modules/zitarev.c
     )
 
-find_library( # Sets the name of the path variable.
-              log-lib
+add_library(nanovg SHARED
+    nanovg/src/nanovg.c
+)
 
-              # Specifies the name of the NDK library that
-              # you want CMake to locate.
-              log )
+find_library( # Sets the name of the path variable.
+    log-lib
+    GLESv2
+    log )
 
 target_link_libraries( native-audio-jni
                        soundpipe 
                        OpenSLES
                        android
+                       nanovg
                        log)
+
+target_link_libraries(nanovg
+    GLESv2
+    EGL
+    log
+    )
 
 target_link_libraries( native-lib
                        android
+                       nanovg
                         
                        # Links the target library to the log library
                        # included in the NDK.

@@ -97,7 +97,51 @@ int sp_synth_init(sp_data *sp, sp_synth *synth)
     return SP_OK;
 }
 
-int sp_synth_compute(sp_data *sp, sp_synth *synth, int bufsize, short *buf)
+int sp_synth_computef(sp_data *sp, sp_synth *synth, int bufsize, SPFLOAT *buf)
+{
+    SPFLOAT tmp[10];
+    int i;
+    for(i = 0; i < bufsize ; i++) {
+        sp_port_compute(sp, synth->port_x, &synth->pos_x, &tmp[4]);
+        sp_port_compute(sp, synth->port_y, &synth->pos_y, &tmp[5]);
+        tmp[6] = 0;
+        synth->clk->bpm = 60 + (tmp[4] * 160);
+        sp_clock_compute(sp, synth->clk, &tmp[6], &tmp[0]);
+        synth->mt1->prob = 0.3 + (tmp[4] * 0.5);
+        sp_maygate_compute(sp, synth->mt1, &tmp[0], &tmp[1]);
+        sp_tseq_compute(sp, synth->tseq, &tmp[1], &tmp[6]);
+        tmp[6] += 48;
+        synth->port->htime = 0.03 + (tmp[4] * -0.0295);
+        sp_port_compute(sp, synth->port, &tmp[6], &tmp[2]);
+        tmp[6] = sp_midi2cps(tmp[2]);
+        synth->fm->freq = tmp[6];
+        sp_trand_compute(sp, synth->tr_car, &tmp[1], &tmp[6]);
+        tmp[6] = floor(tmp[6]);
+        synth->fm->car = tmp[6];
+        sp_trand_compute(sp, synth->tr_mod, &tmp[1], &tmp[6]);
+        tmp[6] = floor(tmp[6]);
+        synth->fm->mod = tmp[6];
+        synth->fm->indx = 4 + (tmp[5] * -4);
+        synth->fm->amp = 0.7 + (tmp[5] * -0.69);
+        sp_fosc_compute(sp, synth->fm, NULL, &tmp[6]);
+        sp_tenvx_compute(sp, synth->env1, &tmp[1], &tmp[7]);
+        tmp[6] = tmp[7] * tmp[6];
+        tmp[7] = tmp[2];
+        tmp[7] += -12;
+        tmp[7] = sp_midi2cps(tmp[7]);
+        *synth->saw->freq = tmp[7];
+        sp_blsaw_compute(sp, synth->saw, NULL, &tmp[7]);
+        sp_moogladder_compute(sp, synth->moog, &tmp[7], &tmp[8]);
+        sp_maygate_compute(sp, synth->mt2, &tmp[1], &tmp[7]);
+        sp_tenvx_compute(sp, synth->env2, &tmp[7], &tmp[9]);
+        tmp[7] = tmp[8] * tmp[9];
+        tmp[6] = tmp[6] + tmp[7];
+        buf[i] = tmp[6];
+    }
+    return SP_OK;
+}
+
+int sp_synth_computei(sp_data *sp, sp_synth *synth, int bufsize, short *buf)
 {
     SPFLOAT tmp[10];
     int i;

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/android-soundpipe.iml" filepath="$PROJECT_DIR$/android-soundpipe.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/orb.iml" filepath="$PROJECT_DIR$/orb.iml" />
     </modules>
   </component>
 </project>
