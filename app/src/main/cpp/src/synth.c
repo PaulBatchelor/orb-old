@@ -3,62 +3,26 @@
 #include "synth.h"
 int sp_synth_create(sp_data *sp, sp_synth *synth)
 {
-    sp_ftbl_create(sp, &synth->rnd, 32);
-    sp_clock_create(&synth->clk);
-    sp_maygate_create(&synth->mt1);
-    sp_maygate_create(&synth->mt2);
-    sp_tseq_create(&synth->tseq);
     sp_ftbl_create(sp, &synth->sine, 4096);
     sp_fosc_create(&synth->fm);
-    sp_tenvx_create(&synth->env1);
-    sp_tenvx_create(&synth->env2);
-    sp_blsaw_create(&synth->saw);
-    sp_moogladder_create(&synth->moog);
-    sp_zitarev_create(&synth->rev);
-    sp_trand_create(&synth->tr_mod);
-    sp_trand_create(&synth->tr_car);
-    sp_port_create(&synth->port);
-    sp_port_create(&synth->port_x);
-    sp_port_create(&synth->port_y);
+    sp_revsc_create(&synth->rev);
+    sp_tenvx_create(&synth->env);
+    sp_thresh_create(&synth->thresh);
     return SP_OK;
 }
 
 int sp_synth_destroy(sp_data *sp, sp_synth *synth)
 {
-    sp_ftbl_destroy(&synth->rnd);
-    sp_clock_destroy(&synth->clk);
-    sp_maygate_destroy(&synth->mt1);
-    sp_maygate_destroy(&synth->mt2);
-    sp_tseq_destroy(&synth->tseq);
     sp_ftbl_destroy(&synth->sine);
     sp_fosc_destroy(&synth->fm);
-    sp_tenvx_destroy(&synth->env1);
-    sp_tenvx_destroy(&synth->env2);
-    sp_blsaw_destroy(&synth->saw);
-    sp_moogladder_destroy(&synth->moog);
-    sp_zitarev_destroy(&synth->rev);
-    sp_trand_destroy(&synth->tr_mod);
-    sp_trand_destroy(&synth->tr_car);
-    sp_port_destroy(&synth->port);
-    sp_port_destroy(&synth->port_x);
-    sp_port_destroy(&synth->port_y);
+    sp_revsc_destroy(&synth->rev);
+    sp_tenvx_destroy(&synth->env);
+    sp_thresh_destroy(&synth->thresh);
     return SP_OK;
 }
 
 int sp_synth_init(sp_data *sp, sp_synth *synth)
 {
-    sp_gen_rand(sp, synth->rnd, "0 0.4 7 0.4 12 0.1 5 0.1");
-    sp_clock_init(sp, synth->clk);
-    synth->clk->bpm = 110;
-    synth->clk->subdiv = 4;
-    sp_maygate_init(sp, synth->mt1);
-    synth->mt1->prob = 0.6;
-    synth->mt1->mode = 1;
-    sp_maygate_init(sp, synth->mt2);
-    synth->mt2->prob = 0.3;
-    synth->mt2->mode = 1;
-    sp_tseq_init(sp, synth->tseq, synth->rnd);
-    synth->tseq->shuf = 1;
     sp_gen_sine(sp, synth->sine);
     sp_fosc_init(sp, synth->fm, synth->sine);
     synth->fm->freq = 440;
@@ -66,34 +30,17 @@ int sp_synth_init(sp_data *sp, sp_synth *synth)
     synth->fm->car = 1;
     synth->fm->mod = 1;
     synth->fm->indx = 1;
-    sp_tenvx_init(sp, synth->env1);
-    synth->env1->atk = 0.005;
-    synth->env1->hold = 0.01;
-    synth->env1->rel = 0.04;
-    sp_tenvx_init(sp, synth->env2);
-    synth->env2->atk = 0.01;
-    synth->env2->hold = 0.01;
-    synth->env2->rel = 0.1;
-    sp_blsaw_init(sp, synth->saw);
-    *synth->saw->amp = 0.1;
-    sp_moogladder_init(sp, synth->moog);
-    synth->moog->freq = 1000;
-    synth->moog->res = 0.1;
-    sp_zitarev_init(sp, synth->rev);
-    *synth->rev->rt60_low = 10;
-    *synth->rev->rt60_mid = 10;
-    *synth->rev->hf_damping = 10000;
-    sp_trand_init(sp, synth->tr_mod);
-    synth->tr_mod->min = 0;
-    synth->tr_mod->max = 7;
-    sp_trand_init(sp, synth->tr_car);
-    synth->tr_car->min = 0;
-    synth->tr_car->max = 3;
-    synth->pos_x = 0.5;
-    synth->pos_y = 0.5;
-    sp_port_init(sp, synth->port, 0.01);
-    sp_port_init(sp, synth->port_x, 0.001);
-    sp_port_init(sp, synth->port_y, 0.001);
+    sp_revsc_init(sp, synth->rev);
+    synth->rev->feedback = 0.96;
+    synth->rev->lpfreq = 10000;
+    sp_tenvx_init(sp, synth->env);
+    synth->env->atk = 0.005;
+    synth->env->hold = 0.01;
+    synth->env->rel = 0.04;
+    sp_thresh_init(sp, synth->thresh);
+    synth->thresh->thresh = 0.5;
+    synth->thresh->mode = 2;
+    synth->gate = 0;
     return SP_OK;
 }
 
@@ -102,41 +49,14 @@ int sp_synth_computef(sp_data *sp, sp_synth *synth, int bufsize, SPFLOAT *buf)
     SPFLOAT tmp[10];
     int i;
     for(i = 0; i < bufsize ; i++) {
-        sp_port_compute(sp, synth->port_x, &synth->pos_x, &tmp[4]);
-        sp_port_compute(sp, synth->port_y, &synth->pos_y, &tmp[5]);
-        tmp[6] = 0;
-        synth->clk->bpm = 60 + (tmp[4] * 160);
-        sp_clock_compute(sp, synth->clk, &tmp[6], &tmp[0]);
-        synth->mt1->prob = 0.3 + (tmp[4] * 0.5);
-        sp_maygate_compute(sp, synth->mt1, &tmp[0], &tmp[1]);
-        sp_tseq_compute(sp, synth->tseq, &tmp[1], &tmp[6]);
-        tmp[6] += 48;
-        synth->port->htime = 0.03 + (tmp[4] * -0.0295);
-        sp_port_compute(sp, synth->port, &tmp[6], &tmp[2]);
-        tmp[6] = sp_midi2cps(tmp[2]);
-        synth->fm->freq = tmp[6];
-        sp_trand_compute(sp, synth->tr_car, &tmp[1], &tmp[6]);
-        tmp[6] = floor(tmp[6]);
-        synth->fm->car = tmp[6];
-        sp_trand_compute(sp, synth->tr_mod, &tmp[1], &tmp[6]);
-        tmp[6] = floor(tmp[6]);
-        synth->fm->mod = tmp[6];
-        synth->fm->indx = 4 + (tmp[5] * -4);
-        synth->fm->amp = 0.7 + (tmp[5] * -0.69);
-        sp_fosc_compute(sp, synth->fm, NULL, &tmp[6]);
-        sp_tenvx_compute(sp, synth->env1, &tmp[1], &tmp[7]);
-        tmp[6] = tmp[7] * tmp[6];
-        tmp[7] = tmp[2];
-        tmp[7] += -12;
-        tmp[7] = sp_midi2cps(tmp[7]);
-        *synth->saw->freq = tmp[7];
-        sp_blsaw_compute(sp, synth->saw, NULL, &tmp[7]);
-        sp_moogladder_compute(sp, synth->moog, &tmp[7], &tmp[8]);
-        sp_maygate_compute(sp, synth->mt2, &tmp[1], &tmp[7]);
-        sp_tenvx_compute(sp, synth->env2, &tmp[7], &tmp[9]);
-        tmp[7] = tmp[8] * tmp[9];
-        tmp[6] = tmp[6] + tmp[7];
-        buf[i] = tmp[6];
+        sp_fosc_compute(sp, synth->fm, NULL, &tmp[3]);
+        sp_thresh_compute(sp, synth->thresh, &synth->gate, &tmp[1]);
+        sp_tenvx_compute(sp, synth->env, &tmp[1], &tmp[0]);
+        tmp[5] = tmp[0] * tmp[3];
+        sp_revsc_compute(sp, synth->rev, &tmp[5], &tmp[5], &tmp[4], &tmp[2]);
+        tmp[4] *= 0.1;
+        tmp[5] = tmp[5] + tmp[4];
+        buf[i] = tmp[5];
     }
     return SP_OK;
 }
@@ -146,41 +66,14 @@ int sp_synth_computei(sp_data *sp, sp_synth *synth, int bufsize, short *buf)
     SPFLOAT tmp[10];
     int i;
     for(i = 0; i < bufsize ; i++) {
-        sp_port_compute(sp, synth->port_x, &synth->pos_x, &tmp[4]);
-        sp_port_compute(sp, synth->port_y, &synth->pos_y, &tmp[5]);
-        tmp[6] = 0;
-        synth->clk->bpm = 60 + (tmp[4] * 160);
-        sp_clock_compute(sp, synth->clk, &tmp[6], &tmp[0]);
-        synth->mt1->prob = 0.3 + (tmp[4] * 0.5);
-        sp_maygate_compute(sp, synth->mt1, &tmp[0], &tmp[1]);
-        sp_tseq_compute(sp, synth->tseq, &tmp[1], &tmp[6]);
-        tmp[6] += 48;
-        synth->port->htime = 0.03 + (tmp[4] * -0.0295);
-        sp_port_compute(sp, synth->port, &tmp[6], &tmp[2]);
-        tmp[6] = sp_midi2cps(tmp[2]);
-        synth->fm->freq = tmp[6];
-        sp_trand_compute(sp, synth->tr_car, &tmp[1], &tmp[6]);
-        tmp[6] = floor(tmp[6]);
-        synth->fm->car = tmp[6];
-        sp_trand_compute(sp, synth->tr_mod, &tmp[1], &tmp[6]);
-        tmp[6] = floor(tmp[6]);
-        synth->fm->mod = tmp[6];
-        synth->fm->indx = 4 + (tmp[5] * -4);
-        synth->fm->amp = 0.7 + (tmp[5] * -0.69);
-        sp_fosc_compute(sp, synth->fm, NULL, &tmp[6]);
-        sp_tenvx_compute(sp, synth->env1, &tmp[1], &tmp[7]);
-        tmp[6] = tmp[7] * tmp[6];
-        tmp[7] = tmp[2];
-        tmp[7] += -12;
-        tmp[7] = sp_midi2cps(tmp[7]);
-        *synth->saw->freq = tmp[7];
-        sp_blsaw_compute(sp, synth->saw, NULL, &tmp[7]);
-        sp_moogladder_compute(sp, synth->moog, &tmp[7], &tmp[8]);
-        sp_maygate_compute(sp, synth->mt2, &tmp[1], &tmp[7]);
-        sp_tenvx_compute(sp, synth->env2, &tmp[7], &tmp[9]);
-        tmp[7] = tmp[8] * tmp[9];
-        tmp[6] = tmp[6] + tmp[7];
-        buf[i] = tmp[6] * 32767;
+        sp_fosc_compute(sp, synth->fm, NULL, &tmp[3]);
+        sp_thresh_compute(sp, synth->thresh, &synth->gate, &tmp[1]);
+        sp_tenvx_compute(sp, synth->env, &tmp[1], &tmp[0]);
+        tmp[5] = tmp[0] * tmp[3];
+        sp_revsc_compute(sp, synth->rev, &tmp[5], &tmp[5], &tmp[4], &tmp[2]);
+        tmp[4] *= 0.1;
+        tmp[5] = tmp[5] + tmp[4];
+        buf[i] = tmp[5] * 32767;
     }
     return SP_OK;
 }

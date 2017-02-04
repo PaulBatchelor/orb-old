@@ -418,9 +418,9 @@ void Java_com_paulbatchelor_orb_MainActivity_shutdown(JNIEnv* env, jclass clazz)
 JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_MainActivity_pos(JNIEnv * env, jobject obj,
 jfloat x, jfloat y)
 {
-    orb.y_pos = y;
-    orb.x_pos = x;
-    orb_set_vals(&orb);
+    orb.mouse.y_pos = y;
+    orb.mouse.x_pos = x;
+    orb_poke(&orb);
 }
 
 JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_GL2JNILib_init(JNIEnv * env, 
@@ -439,7 +439,6 @@ orb_data * orb_get_data()
 JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_GL2JNILib_step(JNIEnv * env, jobject obj)
 {
     orb_step(vg, &orb);
-    orb_set_vals(&orb);
 }
 
 int setupGraphics(int w, int h) {

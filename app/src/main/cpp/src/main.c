@@ -46,12 +46,24 @@ void errorcb(int error, const char* desc)
 
 int premult = 0;
 
+static orb_data *g_orb = NULL;
+
 static void key(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	NVG_NOTUSED(scancode);
 	NVG_NOTUSED(mods);
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+static void mouse_button_callback(GLFWwindow *window, 
+    int button,
+    int action,
+    int mods)
+{
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        orb_poke(g_orb);
+    }
 }
 
 int main()
@@ -65,6 +77,8 @@ int main()
 		printf("Failed to init GLFW.");
 		return -1;
 	}
+    
+    g_orb = &orb;
 
 	glfwSetErrorCallback(errorcb);
 
@@ -106,6 +120,8 @@ int main()
 	glfwSetTime(0);
 	prevt = glfwGetTime();
 
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+
     orb_init(&orb, 44100);
     orb_start_jack(&orb, 44100);
 
@@ -136,8 +152,8 @@ int main()
         mx = CLAMP(mx / winWidth, 0, 1);
         my = CLAMP(my / winHeight, 0, 1);
 
-        orb.x_pos = mx;
-        orb.y_pos = my;
+        orb.mouse.x_pos = mx;
+        orb.mouse.y_pos = my;
 
         orb_set_vals(&orb);
         orb.width = winWidth;

@@ -50,6 +50,5 @@ void orb_audio_destroy(orb_data *orb)
 void orb_synth_set_vals(orb_data *orb)
 {
     sp_synth *synth = orb->synth;
-    synth->pos_x = CLAMP(orb->x_pos, 0, 1);
-    synth->pos_y = CLAMP(orb->y_pos, 0, 1);
+    synth->gate = (synth->gate == 0) ? 1 : 0;
 }
