@@ -9,6 +9,11 @@ typedef struct {
 } orb_mouse;
 
 typedef struct {
+    int x_pos;
+    int y_pos;
+} orb_avatar;
+
+typedef struct {
     /* temporary demo data */
     double x_pos;
     double y_pos;
@@ -17,6 +22,7 @@ typedef struct {
     sp_synth *synth;
     NVGcolor color;
     orb_mouse mouse;
+    orb_avatar av;
 } orb_data;
 
 void orb_step(NVGcontext *vg, orb_data *orb);
@@ -29,3 +35,8 @@ void orb_synth_set_vals(orb_data *orb);
 void orb_init(orb_data *orb, int sr);
 void orb_destroy(orb_data *orb);
 void orb_poke(orb_data *orb);
+
+/* orb avatar */
+
+void orb_avatar_init(orb_data *orb, orb_avatar *av);
+void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av);

@@ -38,11 +38,8 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     nvgBeginFrame(vg, w, h, 1);
 
     nvgBeginPath(vg);
-    
-    nvgArc(vg, orb->x_pos * w, orb->y_pos * h, w * 0.06, 0, 2 * M_PI, NVG_CCW);
-    nvgClosePath(vg);
-    nvgFillColor(vg, orb->color);
-    nvgFill(vg);
+
+    orb_avatar_step(vg, orb, &orb->av);
 
     nvgEndFrame(vg);
 }
@@ -55,6 +52,8 @@ void orb_init(orb_data *orb, int sr)
     orb->width = 1;
     orb->color = nvgRGB(0, 0, 255);
     orb_audio_create(orb, sr);
+
+    orb_avatar_init(orb, &orb->av);
 }
 
 void orb_destroy(orb_data *orb)
@@ -72,4 +71,27 @@ void orb_poke(orb_data *orb)
     orb->y_pos = orb->mouse.y_pos;
     orb->color = nvgRGB(rand() % 256, rand() % 256, rand() % 256);
     orb_synth_set_vals(orb);
+}
+
+void orb_avatar_init(orb_data *orb, orb_avatar *av)
+{
+    av->x_pos = 0;
+    av->y_pos = 0;
+}
+
+void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
+{
+    int w;
+    int h;
+
+    w = orb->width;
+    h = orb->height;
+
+    av->x_pos = orb->x_pos * w;
+    av->y_pos = orb->y_pos * h;
+
+    nvgArc(vg, av->x_pos, av->y_pos, w * 0.06, 0, 2 * M_PI, NVG_CCW);
+    nvgClosePath(vg);
+    nvgFillColor(vg, orb->color);
+    nvgFill(vg);
 }
