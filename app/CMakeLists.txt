@@ -17,8 +17,11 @@ include_directories(
 add_library(native-audio-jni SHARED
     src/main/cpp/native-audio-jni.c 
     src/main/cpp/src/synth.c 
+    src/main/cpp/h/synth.h 
+    src/main/cpp/h/orb.h 
     src/main/cpp/src/audio.c 
-    src/main/cpp/src/run.c 
+    src/main/cpp/src/run.c
+    src/main/cpp/src/vals.c
 )
 
 add_library( # Sets the name of the library.

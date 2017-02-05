@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 #ifdef NANOVG_GLEW
 #  include <GL/glew.h>
@@ -22,14 +23,6 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     int h = orb->height;
 
     static float grey = 0.5;
-    float r1 = (w < h ? w : h) * 0.5f - 5.0f;
-    float r0 = r1 - 20.0f;
-    float r = r0 - 6;
-    float ax = cosf(120.0f/180.0f*NVG_PI) * r;
-    float ay = sinf(120.0f/180.0f*NVG_PI) * r;
-    float bx = cosf(-120.0f/180.0f*NVG_PI) * r;
-    float by = sinf(-120.0f/180.0f*NVG_PI) * r;
-    float hue = sinf(0.5 * 0.12f);
 
     glClearColor(grey, grey, grey, 1.0f);
 
