@@ -23,6 +23,7 @@ typedef struct {
     NVGcolor color;
     orb_mouse mouse;
     orb_avatar av;
+    int grid_size;
 } orb_data;
 
 void orb_step(NVGcontext *vg, orb_data *orb);
@@ -44,3 +45,11 @@ orb_data * orb_data_create();
 
 void orb_synth_destroy(orb_data *orb);
 void orb_synth_create(void *ud, orb_data *orb);
+
+/* grid */
+
+double orb_grid_toreal(orb_data *orb, double n);
+void orb_grid_calculate(orb_data *orb);
+double orb_grid_size(orb_data *orb);
+
+

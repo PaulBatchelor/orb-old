@@ -16,16 +16,21 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
+#define NANOVG_GL2_IMPLEMENTATION
 #include <stdio.h>
+#include <GL/gl.h>
+
 #ifdef NANOVG_GLEW
 #  include <GL/glew.h>
 #endif
 #include <GLFW/glfw3.h>
+#include <GL/glext.h>
+
 #include "nanovg.h"
-#define NANOVG_GL2_IMPLEMENTATION
 #include "nanovg_gl.h"
 
 #include "orb.h"
+#include "jack.h"
 
 #ifndef MAX
 #define MAX(A, B) (A > B ? A : B)

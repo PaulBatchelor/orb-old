@@ -14,6 +14,7 @@
 #include "nanovg.h"
 
 #include "orb.h"
+#include "jack.h"
 
 #define BUFSIZE 2048
 
