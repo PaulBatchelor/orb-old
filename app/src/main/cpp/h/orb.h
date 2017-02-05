@@ -24,6 +24,7 @@ typedef struct {
     orb_mouse mouse;
     orb_avatar av;
     int grid_size;
+    int bias;
 } orb_data;
 
 void orb_step(NVGcontext *vg, orb_data *orb);
@@ -48,8 +49,7 @@ void orb_synth_create(void *ud, orb_data *orb);
 
 /* grid */
 
-double orb_grid_toreal(orb_data *orb, double n);
 void orb_grid_calculate(orb_data *orb);
 double orb_grid_size(orb_data *orb);
-
-
+double orb_grid_x(orb_data *orb, double n);
+double orb_grid_y(orb_data *orb, double n);

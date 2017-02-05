@@ -22,10 +22,23 @@ static void draw_rect(NVGcontext *vg, orb_data *orb, int x, int y)
 {
     nvgBeginPath(vg);
     nvgRect(vg, 
-        orb_grid_toreal(orb, x), 
-        orb_grid_toreal(orb, y), 
+        orb_grid_x(orb, x), 
+        orb_grid_y(orb, y), 
         orb_grid_size(orb),
         orb_grid_size(orb));
+    nvgClosePath(vg);
+    nvgFill(vg);
+}
+
+static void orb_draw_bars(NVGcontext *vg, orb_data *orb)
+{
+    nvgFillColor(vg, nvgRGB(0, 0, 0));
+    nvgBeginPath(vg);
+    nvgRect(vg, 0, 0, orb->width, orb->bias);
+    nvgClosePath(vg);
+    nvgFill(vg);
+    nvgBeginPath(vg);
+    nvgRect(vg, 0, orb->height - orb->bias, orb->width, orb->bias);
     nvgClosePath(vg);
     nvgFill(vg);
 }
@@ -56,14 +69,16 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     draw_rect(vg, orb, 15, 2);
 
     /* bottom left corner */
-    draw_rect(vg, orb, 0, 9);
-    draw_rect(vg, orb, 2, 9);
-    draw_rect(vg, orb, 0, 7);
+    draw_rect(vg, orb, 0, 8);
+    draw_rect(vg, orb, 2, 8);
+    draw_rect(vg, orb, 0, 6);
 
     /* bottom right corner */
-    draw_rect(vg, orb, 15, 9);
-    draw_rect(vg, orb, 13, 9);
-    draw_rect(vg, orb, 15, 7);
+    draw_rect(vg, orb, 15, 8);
+    draw_rect(vg, orb, 13, 8);
+    draw_rect(vg, orb, 15, 6);
+
+    if(orb->bias > 0) orb_draw_bars(vg, orb);
 
     nvgEndFrame(vg);
 }
