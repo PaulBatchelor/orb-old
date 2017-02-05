@@ -5,12 +5,12 @@ typedef struct sp_synth sp_synth;
 
 struct sp_synth {
     sp_data *sp;
-    sp_trand *tr;
+    sp_tenvx *env;
     sp_fosc *fm;
     sp_thresh *thresh;
-    sp_revsc *rev;
     SPFLOAT gate;
-    sp_tenvx *env;
+    sp_trand *tr;
+    sp_revsc *rev;
     sp_ftbl *sine;
 };
 

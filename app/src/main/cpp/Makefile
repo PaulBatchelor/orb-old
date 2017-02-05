@@ -24,10 +24,13 @@ src/vals.o: src/synth.o
 orb: $(OBJ) $(HFILES)
 	$(CC) $(OBJ) $(LDFLAGS) -o $@
 
-src/synth.c: lua/ping.lua
+src/synth.c: spgen/ping.lua
 	lua $<
 
 h/synth.h: src/synth.c
+
+install:
+	cd ../../../../; ./gradlew installDebug
 
 clean:
 	rm -rf orb $(OBJ)

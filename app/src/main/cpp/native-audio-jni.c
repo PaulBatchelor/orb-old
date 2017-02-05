@@ -428,6 +428,7 @@ JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_GL2JNILib_init(JNIEnv * env,
 {
     orb.width = width;
     orb.height = height;
+    orb_grid_calculate(&orb);
     setupGraphics(width, height);
 }
 

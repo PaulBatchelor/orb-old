@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 #ifdef NANOVG_GLEW
 #  include <GL/glew.h>
@@ -17,6 +18,18 @@
 
 #include "orb.h"
 
+static void draw_rect(NVGcontext *vg, orb_data *orb, int x, int y)
+{
+    nvgBeginPath(vg);
+    nvgRect(vg, 
+        orb_grid_toreal(orb, x), 
+        orb_grid_toreal(orb, y), 
+        orb_grid_size(orb),
+        orb_grid_size(orb));
+    nvgClosePath(vg);
+    nvgFill(vg);
+}
+
 void orb_step(NVGcontext *vg, orb_data *orb)
 {    
     int w = orb->width;
@@ -30,9 +43,27 @@ void orb_step(NVGcontext *vg, orb_data *orb)
 
     nvgBeginFrame(vg, w, h, 1);
 
-    nvgBeginPath(vg);
-
     orb_avatar_step(vg, orb, &orb->av);
+
+    ///* top left corner */
+    draw_rect(vg, orb, 0, 0);
+    draw_rect(vg, orb, 2, 0);
+    draw_rect(vg, orb, 0, 2);
+
+    /* top right corner */
+    draw_rect(vg, orb, 15, 0);
+    draw_rect(vg, orb, 13, 0);
+    draw_rect(vg, orb, 15, 2);
+
+    /* bottom left corner */
+    draw_rect(vg, orb, 0, 9);
+    draw_rect(vg, orb, 2, 9);
+    draw_rect(vg, orb, 0, 7);
+
+    /* bottom right corner */
+    draw_rect(vg, orb, 15, 9);
+    draw_rect(vg, orb, 13, 9);
+    draw_rect(vg, orb, 15, 7);
 
     nvgEndFrame(vg);
 }
@@ -83,6 +114,7 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     av->x_pos = orb->x_pos * w;
     av->y_pos = orb->y_pos * h;
 
+    nvgBeginPath(vg);
     nvgArc(vg, av->x_pos, av->y_pos, w * 0.06, 0, 2 * M_PI, NVG_CCW);
     nvgClosePath(vg);
     nvgFillColor(vg, orb->color);

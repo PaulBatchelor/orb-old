@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <time.h>
 #include "nanovg.h"
 #include "orb.h"
 #include "soundpipe.h"
@@ -39,6 +40,7 @@ void orb_audio_create(orb_data *orb, int sr)
 {
     sp_create(&sp);
     sp->sr = sr;
+    sp_srand(sp, time(NULL));
     orb_synth_create(sp, orb);
 }
 

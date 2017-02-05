@@ -75,7 +75,6 @@ int main()
 {
 	GLFWwindow* window;
 	NVGcontext* vg = NULL;
-	double prevt = 0;
     orb_data orb;
 
 	if (!glfwInit()) {
@@ -123,7 +122,6 @@ int main()
 	glfwSwapInterval(0);
 
 	glfwSetTime(0);
-	prevt = glfwGetTime();
 
     glfwSetMouseButtonCallback(window, mouse_button_callback);
 
@@ -132,14 +130,10 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		double mx, my, t, dt;
+		double mx, my;
 		int winWidth, winHeight;
 		int fbWidth, fbHeight;
 		float pxRatio;
-
-		t = glfwGetTime();
-		dt = t - prevt;
-		prevt = t;
 
 		glfwGetCursorPos(window, &mx, &my);
 		glfwGetWindowSize(window, &winWidth, &winHeight);
@@ -163,6 +157,7 @@ int main()
         orb_set_vals(&orb);
         orb.width = winWidth;
         orb.height = winHeight;
+        orb_grid_calculate(&orb);
 
         orb_step(vg, &orb);
 

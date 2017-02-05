@@ -325,4 +325,4 @@ function ivar_star(fp, n, var, name)
     if(var ~= nil) then print4(fp, "*"..n:assign(name, var)) end
 end
 
-require("mods")
+require("spgen.mods")

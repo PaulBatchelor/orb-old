@@ -22,6 +22,7 @@ add_library(native-audio-jni SHARED
     src/main/cpp/src/audio.c 
     src/main/cpp/src/run.c
     src/main/cpp/src/vals.c
+    src/main/cpp/src/grid.c
 )
 
 add_library( # Sets the name of the library.

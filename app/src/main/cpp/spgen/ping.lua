@@ -1,4 +1,4 @@
-require("sp")
+require("spgen.sp")
 
 SP:nchan(1)
 
