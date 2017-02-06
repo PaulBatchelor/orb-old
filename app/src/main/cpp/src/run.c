@@ -106,10 +106,24 @@ void orb_set_vals(orb_data *orb)
 
 void orb_poke(orb_data *orb)
 {
-    orb->x_pos = orb->mouse.x_pos;
-    orb->y_pos = orb->mouse.y_pos;
-    orb->color = nvgRGB(rand() % 256, rand() % 256, rand() % 256);
-    orb_synth_set_vals(orb);
+    orb_avatar *av = &orb->av;
+    double mx = orb->mouse.x_pos * orb->width;
+    double my = orb->mouse.y_pos * orb->height;
+    double ax = av->x_pos;
+    double ay = av->y_pos;
+
+    double distance = sqrt( 
+        (ax - mx) * (ax - mx) +
+        (ay - my) * (ay - my)
+    );
+
+    //orb->x_pos = orb->mouse.x_pos;
+    //orb->y_pos = orb->mouse.y_pos;
+
+    if(distance <= 3 * orb_grid_size(orb)) {
+        orb->color = nvgRGB(rand() % 256, rand() % 256, rand() % 256);
+        orb_synth_set_vals(orb);
+    }
 }
 
 void orb_avatar_init(orb_data *orb, orb_avatar *av)
@@ -130,7 +144,7 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     av->y_pos = orb->y_pos * h;
 
     nvgBeginPath(vg);
-    nvgArc(vg, av->x_pos, av->y_pos, w * 0.06, 0, 2 * M_PI, NVG_CCW);
+    nvgArc(vg, av->x_pos, av->y_pos, orb_grid_size(orb), 0, 2 * M_PI, NVG_CCW);
     nvgClosePath(vg);
     nvgFillColor(vg, orb->color);
     nvgFill(vg);

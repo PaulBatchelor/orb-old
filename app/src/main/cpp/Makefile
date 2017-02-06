@@ -31,6 +31,7 @@ h/synth.h: src/synth.c
 
 install:
 	cd ../../../../; ./gradlew installDebug
+	adb shell am start -n com.paulbatchelor.orb/.MainActivity
 
 clean:
 	rm -rf orb $(OBJ)
