@@ -125,13 +125,17 @@ int main()
 
     glfwSetMouseButtonCallback(window, mouse_button_callback);
 
+    int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    printf("width = %d height = %d\n", winWidth, winHeight);
+    orb.width = winWidth;
+    orb.height = winHeight;
     orb_init(&orb, 44100);
     orb_start_jack(&orb, 44100);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		double mx, my;
-		int winWidth, winHeight;
 		int fbWidth, fbHeight;
 		float pxRatio;
 

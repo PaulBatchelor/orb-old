@@ -48,35 +48,14 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     int w = orb->width;
     int h = orb->height;
 
-    static float grey = 0.5;
 
-    glClearColor(grey, grey, grey, 1.0f);
+    glClearColor(orb->color2.r, orb->color2.g, orb->color2.b, 1.0f);
 
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     nvgBeginFrame(vg, w, h, 1);
 
     orb_avatar_step(vg, orb, &orb->av);
-
-    ///* top left corner */
-    draw_rect(vg, orb, 0, 0);
-    draw_rect(vg, orb, 2, 0);
-    draw_rect(vg, orb, 0, 2);
-
-    /* top right corner */
-    draw_rect(vg, orb, 15, 0);
-    draw_rect(vg, orb, 13, 0);
-    draw_rect(vg, orb, 15, 2);
-
-    /* bottom left corner */
-    draw_rect(vg, orb, 0, 8);
-    draw_rect(vg, orb, 2, 8);
-    draw_rect(vg, orb, 0, 6);
-
-    /* bottom right corner */
-    draw_rect(vg, orb, 15, 8);
-    draw_rect(vg, orb, 13, 8);
-    draw_rect(vg, orb, 15, 6);
 
     if(orb->bias > 0) orb_draw_bars(vg, orb);
 
@@ -87,12 +66,15 @@ void orb_init(orb_data *orb, int sr)
 {
     orb->x_pos = 0.5;
     orb->y_pos = 0.5;
-    orb->height = 1;
-    orb->width = 1;
-    orb->color = nvgRGB(0, 0, 255);
     orb_audio_create(orb, sr);
 
     orb_avatar_init(orb, &orb->av);
+    orb_motion_init(orb, &orb->motion);
+    //orb_motion_add_force(orb, &orb->motion, 1.0, 1.0);
+    orb_motion_set_acceleration(orb, &orb->motion, 0.6);
+
+    orb->color1 = nvgRGB(211, 186, 169);
+    orb->color2 = nvgRGB(39, 27, 20);
 }
 
 void orb_destroy(orb_data *orb)
@@ -102,6 +84,57 @@ void orb_destroy(orb_data *orb)
 
 void orb_set_vals(orb_data *orb)
 {
+}
+
+void orb_avatar_poke(
+    orb_data *orb,
+    orb_motion *m,
+    double mx,
+    double my,
+    double ax,
+    double ay) 
+{
+    double force_x;
+    double force_y;
+
+    double x_d;
+    double y_d;
+
+    double q_x;
+    double q_y;
+    double amt;
+
+    amt = 3.0;
+    force_x = 0;
+    force_y = 0;
+
+    x_d = mx - ax;
+    y_d = my - ay;
+
+    /* first, figure out the quandrant */
+    if(x_d > 0) {
+        if(y_d < 0) {
+            q_x = 1;
+            q_y = 1;
+        } else {
+            q_x = 1;
+            q_y = -1;
+        }
+    } else {
+        if(y_d < 0) {
+            q_x = -1;
+            q_y = 1;
+        } else {
+            q_x = -1;
+            q_y = -1;
+        }
+    }
+
+    force_y = 2 * atan(fabs(y_d) / fabs(x_d)) / M_PI;
+    force_x = force_y - 1;
+
+    orb_motion_add_force(orb, m, amt * q_x * force_x, amt * q_y * force_y);
+
 }
 
 void orb_poke(orb_data *orb)
@@ -117,35 +150,30 @@ void orb_poke(orb_data *orb)
         (ay - my) * (ay - my)
     );
 
-    //orb->x_pos = orb->mouse.x_pos;
-    //orb->y_pos = orb->mouse.y_pos;
-
     if(distance <= 3 * orb_grid_size(orb)) {
-        orb->color = nvgRGB(rand() % 256, rand() % 256, rand() % 256);
+        orb_avatar_poke(orb, &orb->motion, mx, my, ax, ay);
         orb_synth_set_vals(orb);
     }
 }
 
 void orb_avatar_init(orb_data *orb, orb_avatar *av)
 {
-    av->x_pos = 0;
-    av->y_pos = 0;
+    av->x_pos = 0.5 * orb->width;
+    av->y_pos = 0.5 * orb->height;
 }
 
 void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
 {
-    int w;
-    int h;
 
-    w = orb->width;
-    h = orb->height;
-
-    av->x_pos = orb->x_pos * w;
-    av->y_pos = orb->y_pos * h;
+    orb_motion_step(orb, &orb->motion, &av->x_pos, &av->y_pos);
+    orb_motion_bounce_edges(orb, &orb->motion, 
+        av->x_pos, 
+        av->y_pos, 
+        orb_grid_size(orb));
 
     nvgBeginPath(vg);
     nvgArc(vg, av->x_pos, av->y_pos, orb_grid_size(orb), 0, 2 * M_PI, NVG_CCW);
     nvgClosePath(vg);
-    nvgFillColor(vg, orb->color);
+    nvgFillColor(vg, orb->color1);
     nvgFill(vg);
 }

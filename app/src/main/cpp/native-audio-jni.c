@@ -147,6 +147,7 @@ static void create_soundpipe(int sr, int bufsize)
     /*TODO: make this sp variable not sp */
     soundpipe *sound = &g_sp;
 
+    LOGI("initialising orb\n");
     orb_init(&orb, sr);
 
     /* buffer stuff */
@@ -423,11 +424,19 @@ jfloat x, jfloat y)
     orb_poke(&orb);
 }
 
+JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_MainActivity_setDimensions(JNIEnv * env, jobject obj,
+    jint width, jint height)
+{
+    orb.width = width;   
+    orb.height = height;   
+}
+
 JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_GL2JNILib_init(JNIEnv * env, 
     jobject obj,  jint width, jint height)
 {
     orb.width = width;
     orb.height = height;
+    LOGI("the width is %d and the height is %d\n", width, height);
     orb_grid_calculate(&orb);
     setupGraphics(width, height);
 }
