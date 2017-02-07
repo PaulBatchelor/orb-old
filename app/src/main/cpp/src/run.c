@@ -71,7 +71,7 @@ void orb_init(orb_data *orb, int sr)
     orb_avatar_init(orb, &orb->av);
     orb_motion_init(orb, &orb->motion);
     //orb_motion_add_force(orb, &orb->motion, 1.0, 1.0);
-    orb_motion_set_acceleration(orb, &orb->motion, 0.6);
+    orb_motion_set_acceleration(orb, &orb->motion, 0.8);
 
     orb->color1 = nvgRGB(211, 186, 169);
     orb->color2 = nvgRGB(39, 27, 20);

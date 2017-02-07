@@ -213,3 +213,17 @@ function SP:revsc(name, decay, cutoff)
         ivar(fp, n, cutoff, "lpfreq")
     end)
 end
+
+function SP:delay(name, feedback, dtime)
+    return SP:new(name, "delay", {dtime}, 
+    function (fp, n)
+        ivar(fp, n, feedback, "feedback")
+    end)
+end
+
+function SP:butlp(name, freq)
+    return SP:new(name, "butlp", {}, 
+    function (fp, n)
+        ivar(fp, n, freq, "freq")
+    end)
+end
