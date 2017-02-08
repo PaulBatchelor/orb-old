@@ -130,6 +130,7 @@ int main()
     printf("width = %d height = %d\n", winWidth, winHeight);
     orb.width = winWidth;
     orb.height = winHeight;
+    orb_grid_calculate(&orb);
     orb_init(&orb, 44100);
     orb_start_jack(&orb, 44100);
 

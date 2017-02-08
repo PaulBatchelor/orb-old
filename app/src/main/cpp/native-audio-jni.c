@@ -429,6 +429,7 @@ JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_MainActivity_setDimensions(JNI
 {
     orb.width = width;   
     orb.height = height;   
+    orb_grid_calculate(&orb);
 }
 
 JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_GL2JNILib_init(JNIEnv * env, 

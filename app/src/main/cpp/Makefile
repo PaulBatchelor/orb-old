@@ -8,7 +8,7 @@ CFLAGS += -Wno-implicit-function-declaration
 
 HFILES = h/orb.h h/synth.h
 
-SRC = main.c run.c jack.c audio.c synth.c vals.c grid.c motion.c
+SRC = main.c run.c jack.c audio.c synth.c vals.c grid.c motion.c cstack.c
 
 OBJ = $(addprefix src/,$(SRC:.c=.o))
 

@@ -1,9 +1,14 @@
+#ifndef ORB_H 
+#define ORB_H
+
 #include <sys/time.h>
 
 #ifndef SP_SYNTH_STRUCT
 #define SP_SYNTH_STRUCT
 typedef struct sp_synth sp_synth;
 #endif
+
+#define CSTACK_MAX 8
 
 typedef struct {
     double x_pos;
@@ -13,14 +18,32 @@ typedef struct {
 typedef struct {
     double x_pos;
     double y_pos;
+    double radius;
+    double phs;
+    double env;
 } orb_avatar;
 
 typedef struct {
     float vel_x;
     float vel_y;
     float acc;
-    struct timeval ptime;
 } orb_motion;
+
+typedef struct {
+    double x;
+    double y;
+    double alpha;
+    double radius;
+} orb_circle;
+
+typedef struct {
+    int ncirc;
+    int pos;
+    double irad;
+    double growth;
+    double decay;
+    orb_circle circ[CSTACK_MAX];
+} orb_cstack;
 
 typedef struct {
     /* temporary demo data */
@@ -36,6 +59,9 @@ typedef struct {
     int grid_size;
     int bias;
     orb_motion motion;
+    orb_cstack cstack;
+    struct timeval tv;
+    double dtime;
 } orb_data;
 
 void orb_step(NVGcontext *vg, orb_data *orb);
@@ -73,7 +99,16 @@ void orb_motion_step(orb_data *orb,
     double *x,
     double *y);
 void orb_motion_add_force(orb_data *orb, orb_motion *m, double vx, double vy);
-double orb_motion_dtime(orb_data *orb, orb_motion *m);
 void orb_motion_set_acceleration(orb_data *orb, orb_motion *m, double acc);
 void orb_motion_bounce_edges(orb_data *orb, orb_motion *m, 
         double x, double y, double r);
+
+double orb_dtime(orb_data *orb);
+
+/* circle stack */
+
+void orb_cstack_init(orb_data *orb, orb_cstack *stack);
+void orb_cstack_add(orb_data *orb, orb_cstack *stack, double x, double y);
+void orb_cstack_display(NVGcontext *vg, orb_data *orb, orb_cstack *stack);
+
+#endif

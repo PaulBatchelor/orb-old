@@ -8,7 +8,6 @@ void orb_motion_init(orb_data *orb, orb_motion *m)
     m->vel_x = 0;
     m->vel_y = 0;
     m->acc = 0;
-    gettimeofday(&m->ptime, NULL);
 }
 
 void orb_motion_step(orb_data *orb, 
@@ -16,7 +15,7 @@ void orb_motion_step(orb_data *orb,
     double *x,
     double *y)
 {
-    double dtime = orb_motion_dtime(orb, m);
+    double dtime = orb->dtime;
     double dx = m->vel_x * dtime;
     double dy = m->vel_y * dtime;
     double a = pow(m->acc, dtime);
@@ -35,17 +34,17 @@ void orb_motion_add_force(orb_data *orb, orb_motion *m, double vx, double vy)
     m->vel_y += vy;
 }
 
-double orb_motion_dtime(orb_data *orb, orb_motion *m)
+double orb_dtime(orb_data *orb)
 {
     struct timeval newtime;
     double dtime = 0;
 
     gettimeofday(&newtime, NULL);
     
-    dtime += (newtime.tv_sec - m->ptime.tv_sec);
-    dtime += (double)(newtime.tv_usec - m->ptime.tv_usec) / 1000000.0;
+    dtime += (newtime.tv_sec - orb->tv.tv_sec);
+    dtime += (double)(newtime.tv_usec - orb->tv.tv_usec) / 1000000.0;
 
-    m->ptime = newtime;
+    orb->tv = newtime;
     return dtime;
 }
 
