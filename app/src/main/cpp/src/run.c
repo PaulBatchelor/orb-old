@@ -167,9 +167,9 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
 
     if(av->env > 0.001) {
         av->radius = orb_grid_size(orb) + 
-            (0.5 * (1 + cos(av->phs)) * orb_grid_size(orb) * 0.06) * av->env;
+            (0.5 * (1 + cos(av->phs)) * orb_grid_size(orb) * 0.04) * av->env;
         av->phs = fmod(av->phs + (av->env * 25.0 * orb->dtime), 2 * M_PI);
-        av->env *= pow(0.2, orb->dtime);
+        av->env *= pow(0.3, orb->dtime);
     }
 
     orb_motion_bounce_edges(orb, &orb->motion, 
