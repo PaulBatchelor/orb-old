@@ -44,12 +44,15 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     orb->dtime = orb_dtime(orb);
     nvgBeginFrame(vg, w, h, 1);
 
-    orb_cstack_display(vg, orb, &orb->cstack);
 
+    nvgFillColor(vg, orb->color1);
+    orb_object_draw(vg, orb, &orb->square);
+
+    
+    orb_cstack_display(vg, orb, &orb->cstack);
     orb_avatar_step(vg, orb, &orb->av);
 
     if(orb->bias > 0) orb_draw_bars(vg, orb);
-
     nvgEndFrame(vg);
 }
 
@@ -68,6 +71,7 @@ void orb_init(orb_data *orb, int sr)
 
     orb_cstack_init(orb, &orb->cstack);
     gettimeofday(&orb->tv, NULL);
+    orb_object_set(orb, &orb->square, 4, 4);
 }
 
 void orb_destroy(orb_data *orb)
@@ -173,8 +177,8 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     }
 
     orb_motion_bounce_edges(orb, &orb->motion, 
-        av->x_pos, 
-        av->y_pos, 
+        &av->x_pos, 
+        &av->y_pos, 
         orb_grid_size(orb));
 
     nvgBeginPath(vg);
