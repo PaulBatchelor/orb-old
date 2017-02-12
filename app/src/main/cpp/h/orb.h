@@ -9,6 +9,13 @@ typedef struct sp_synth sp_synth;
 #endif
 
 #define CSTACK_MAX 8
+#define OBJECTS_MAX 8
+
+typedef struct orb_data orb_data;
+
+enum {
+ORB_SQUARE
+};
 
 typedef struct {
     double x_pos;
@@ -49,10 +56,20 @@ typedef struct {
     int type;
     double x;
     double y;
+    int next;
 } orb_object;
 
+typedef void (orb_draw) (NVGcontext *vg, orb_data *, orb_object *);
+
 typedef struct {
-    /* temporary demo data */
+    orb_object obj[OBJECTS_MAX];
+    orb_draw *draw[3];
+    int start;
+    int nobjects;
+    int nextfree;
+} orb_object_list;
+
+struct orb_data {
     double x_pos;
     double y_pos;
     int width; 
@@ -68,8 +85,9 @@ typedef struct {
     orb_cstack cstack;
     struct timeval tv;
     double dtime;
-    orb_object square;
-} orb_data;
+    orb_object_list list;
+};
+
 
 void orb_step(NVGcontext *vg, orb_data *orb);
 void orb_audio(orb_data *orb, float **buf, int nframes);
@@ -120,7 +138,13 @@ void orb_cstack_display(NVGcontext *vg, orb_data *orb, orb_cstack *stack);
 
 /* objects */
 
-void orb_object_set(orb_data *orb, orb_object *obj, int x, int y);
+void orb_object_set(orb_data *orb, orb_object *obj, int x, int y, int type);
 void orb_object_draw(NVGcontext *vg, orb_data *orb, orb_object *obj);
+
+void orb_object_list_init(orb_data *orb, orb_object_list *list);
+void orb_object_list_draw(NVGcontext *vg, orb_data *orb, orb_object_list *list);
+
+int orb_object_new(orb_data *orb, orb_object_list *list, orb_object **obj);
+int orb_object_add_square(orb_data *orb, orb_object_list *list, int x, int y);
 
 #endif

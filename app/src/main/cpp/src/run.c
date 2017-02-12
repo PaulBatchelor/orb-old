@@ -46,7 +46,7 @@ void orb_step(NVGcontext *vg, orb_data *orb)
 
 
     nvgFillColor(vg, orb->color1);
-    orb_object_draw(vg, orb, &orb->square);
+    orb_object_list_draw(vg, orb, &orb->list);
 
     
     orb_cstack_display(vg, orb, &orb->cstack);
@@ -71,7 +71,9 @@ void orb_init(orb_data *orb, int sr)
 
     orb_cstack_init(orb, &orb->cstack);
     gettimeofday(&orb->tv, NULL);
-    orb_object_set(orb, &orb->square, 4, 4);
+    orb_object_list_init(orb, &orb->list);
+    orb_object_add_square(orb, &orb->list, 4, 4);
+    orb_object_add_square(orb, &orb->list, 9, 8);
 }
 
 void orb_destroy(orb_data *orb)
