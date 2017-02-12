@@ -46,6 +46,12 @@ typedef struct {
 } orb_cstack;
 
 typedef struct {
+    int type;
+    double x;
+    double y;
+} orb_object;
+
+typedef struct {
     /* temporary demo data */
     double x_pos;
     double y_pos;
@@ -62,6 +68,7 @@ typedef struct {
     orb_cstack cstack;
     struct timeval tv;
     double dtime;
+    orb_object square;
 } orb_data;
 
 void orb_step(NVGcontext *vg, orb_data *orb);
@@ -101,7 +108,7 @@ void orb_motion_step(orb_data *orb,
 void orb_motion_add_force(orb_data *orb, orb_motion *m, double vx, double vy);
 void orb_motion_set_acceleration(orb_data *orb, orb_motion *m, double acc);
 void orb_motion_bounce_edges(orb_data *orb, orb_motion *m, 
-        double x, double y, double r);
+    double *x, double *y, double r);
 
 double orb_dtime(orb_data *orb);
 
@@ -110,5 +117,10 @@ double orb_dtime(orb_data *orb);
 void orb_cstack_init(orb_data *orb, orb_cstack *stack);
 void orb_cstack_add(orb_data *orb, orb_cstack *stack, double x, double y);
 void orb_cstack_display(NVGcontext *vg, orb_data *orb, orb_cstack *stack);
+
+/* objects */
+
+void orb_object_set(orb_data *orb, orb_object *obj, int x, int y);
+void orb_object_draw(NVGcontext *vg, orb_data *orb, orb_object *obj);
 
 #endif

@@ -54,13 +54,21 @@ void orb_motion_set_acceleration(orb_data *orb, orb_motion *m, double acc)
 }
 
 void orb_motion_bounce_edges(orb_data *orb, orb_motion *m, 
-        double x, double y, double r)
+        double *x, double *y, double r)
 {
-    if(x + r> orb->width || x - r < 0) {
+    if(*x + r > orb->width) {
         m->vel_x *= -1;
+        *x = orb->width - r;
+    } else if(*x - r < 0) {
+        m->vel_x *= -1;
+        *x = r;
     }
 
-    if(y + r > orb->height - orb->bias || y - r < orb->bias) {
+    if(*y + r > orb->height - orb->bias) {
         m->vel_y *= -1;
+        *y = (orb->height - orb->bias) - r;
+    }else if(*y - r < orb->bias) {
+        m->vel_y *= -1;
+        *y = orb->bias + r;
     }
 }
