@@ -107,8 +107,11 @@ void orb_avatar_collisions(orb_data *orb,
     double snap_y;
     double block_x;
     double block_y;
+    double eps;
 
     id = orb_avatar_find(orb, av, &x, &y);
+    
+    eps = orb_grid_size(orb) * 1.005;
 
     snap_y = 0;
     snap_x = 0;
@@ -125,8 +128,8 @@ void orb_avatar_collisions(orb_data *orb,
         return;
     }
 
+    rc = 0;
     if(!top) {
-        rc = 0;
         rc += orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH);
         if(!left) {
             rc += orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH - 1);
@@ -135,24 +138,15 @@ void orb_avatar_collisions(orb_data *orb,
             rc += orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH + 1);
         }
 
-        if(rc > 0) {
-            snap_y  = block_y + orb_grid_size(orb);
-            snapped_y = 1;
-        }
     }
 
     if(!bottom) {
-        rc = 0;
         rc += orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH);
         if(!left) {
             rc += orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH - 1);
         }
         if(!right) {
             rc += orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH + 1);
-        }
-        if(rc > 0) { 
-            snap_y  = block_y;
-            snapped_y = 1;
         }
     }
 
@@ -170,8 +164,10 @@ void orb_avatar_collisions(orb_data *orb,
         }
     }
 
-    if(snapped_x) av->x_pos = snap_x;
-    if(snapped_y) av->y_pos = snap_y;
+    if(rc > 0) {
+        /* if any collisions have happend, check to see that */
+        //orb_motion_jump(orb, &orb->motion, &av->x_pos, &av->y_pos, 10);
+    }
 }
 
 int orb_avatar_check_collision(orb_data *orb, 

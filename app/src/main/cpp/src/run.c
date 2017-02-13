@@ -107,11 +107,14 @@ void orb_poke(orb_data *orb)
     }
 }
 
+static unsigned int count = 0;
 void orb_collide(orb_data *orb, 
     orb_object_list *list, orb_avatar *av, 
     orb_object *obj,
     int pos)
 {
+    printf("collide! %d\n", count);
+    count++;
     if(obj->id == orb->id[0]) {
         orb_motion_repel(orb, &orb->motion, 1);
     } else {

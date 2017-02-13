@@ -153,6 +153,11 @@ void orb_motion_step(orb_data *orb,
     orb_motion *m,
     double *x,
     double *y);
+void orb_motion_jump(orb_data *orb, 
+    orb_motion *m,
+    double *x,
+    double *y,
+    double amt);
 void orb_motion_add_force(orb_data *orb, orb_motion *m, double vx, double vy);
 void orb_motion_set_acceleration(orb_data *orb, orb_motion *m, double acc);
 void orb_motion_bounce_edges(orb_data *orb, orb_motion *m, 
