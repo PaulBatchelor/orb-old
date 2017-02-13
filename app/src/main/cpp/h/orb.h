@@ -18,7 +18,7 @@ typedef struct sp_synth sp_synth;
 typedef struct orb_data orb_data;
 
 enum {
-ORB_SQUARE
+ORB_SQUARE = 0,
 };
 
 typedef struct {
@@ -92,6 +92,7 @@ struct orb_data {
     struct timeval tv;
     double dtime;
     orb_object_list list;
+    int id[2];
 };
 
 
@@ -124,7 +125,7 @@ int orb_avatar_find(orb_data *orb, orb_avatar *av, int *x, int *y);
 void orb_avatar_collisions(orb_data *orb, 
         orb_object_list *list, 
         orb_avatar *av);
-void orb_avatar_check_collision(orb_data *orb, 
+int orb_avatar_check_collision(orb_data *orb, 
     orb_object_list *list, 
     orb_avatar *av,
     int pos);
@@ -156,6 +157,7 @@ void orb_motion_add_force(orb_data *orb, orb_motion *m, double vx, double vy);
 void orb_motion_set_acceleration(orb_data *orb, orb_motion *m, double acc);
 void orb_motion_bounce_edges(orb_data *orb, orb_motion *m, 
     double *x, double *y, double r);
+void orb_motion_repel(orb_data *orb, orb_motion *av, double amt);
 
 double orb_dtime(orb_data *orb);
 
@@ -178,5 +180,10 @@ int orb_object_add_square(orb_data *orb, orb_object_list *list, int x, int y);
 void orb_object_list_map(orb_data *orb, orb_object_list *list, orb_object *obj);
 int orb_object_list_get(orb_data *orb, orb_object_list *list, 
     orb_object **obj, int pos);
+
+void orb_collide(orb_data *orb, 
+    orb_object_list *list, orb_avatar *av, 
+    orb_object *obj,
+    int id);
 
 #endif

@@ -72,3 +72,9 @@ void orb_motion_bounce_edges(orb_data *orb, orb_motion *m,
         *y = orb->bias + r;
     }
 }
+
+void orb_motion_repel(orb_data *orb, orb_motion *m, double amt)
+{
+    m->vel_x *= -amt;
+    m->vel_y *= -amt;
+}
