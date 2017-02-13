@@ -127,7 +127,6 @@ int main()
 
     int winWidth, winHeight;
     glfwGetWindowSize(window, &winWidth, &winHeight);
-    printf("width = %d height = %d\n", winWidth, winHeight);
     orb.width = winWidth;
     orb.height = winHeight;
     orb_grid_calculate(&orb);

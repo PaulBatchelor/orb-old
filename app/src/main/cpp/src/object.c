@@ -23,10 +23,12 @@ void orb_object_draw(NVGcontext *vg, orb_data *orb, orb_object *obj)
 
 void orb_object_list_init(orb_data *orb, orb_object_list *list)
 {
+    int i;
     list->start = -1;
     list->nobjects = 0;
     list->nextfree = 0;
     list->draw[ORB_SQUARE] = orb_object_draw;
+    for(i = 0; i < GRID_SIZE; i++) list->map[i] = 0;
 }
 
 void orb_object_list_draw(NVGcontext *vg, orb_data *orb, orb_object_list *list)
@@ -72,6 +74,15 @@ int orb_object_add_square(orb_data *orb, orb_object_list *list, int x, int y)
     if(id < 0) return -1;
 
     orb_object_set(orb, obj, x, y, ORB_SQUARE);
+    orb_object_list_map(orb, list, obj);
 
     return id;
+}
+
+void orb_object_list_map(orb_data *orb, orb_object_list *list, orb_object *obj)
+{
+    int id;
+
+    id = orb_grid_id(orb, obj->x, obj->y);
+    list->map[id]++;
 }

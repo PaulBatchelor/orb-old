@@ -25,3 +25,8 @@ double orb_grid_y(orb_data *orb, double n)
 {
     return n * orb->grid_size + orb->bias;
 }
+
+int orb_grid_id(orb_data *orb, int x, int y)
+{
+    return y * GRID_WIDTH + x;
+}

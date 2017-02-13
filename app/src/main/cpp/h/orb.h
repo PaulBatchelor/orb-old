@@ -10,6 +10,10 @@ typedef struct sp_synth sp_synth;
 
 #define CSTACK_MAX 8
 #define OBJECTS_MAX 8
+/* 9 x 16 */
+#define GRID_SIZE 144
+#define GRID_WIDTH 16 
+#define GRID_HEIGHT 9 
 
 typedef struct orb_data orb_data;
 
@@ -67,6 +71,7 @@ typedef struct {
     int start;
     int nobjects;
     int nextfree;
+    char map[GRID_SIZE];
 } orb_object_list;
 
 struct orb_data {
@@ -115,6 +120,7 @@ void orb_grid_calculate(orb_data *orb);
 double orb_grid_size(orb_data *orb);
 double orb_grid_x(orb_data *orb, double n);
 double orb_grid_y(orb_data *orb, double n);
+int orb_grid_id(orb_data *orb, int x, int y);
 
 /* motion */
 
@@ -146,5 +152,6 @@ void orb_object_list_draw(NVGcontext *vg, orb_data *orb, orb_object_list *list);
 
 int orb_object_new(orb_data *orb, orb_object_list *list, orb_object **obj);
 int orb_object_add_square(orb_data *orb, orb_object_list *list, int x, int y);
+void orb_object_list_map(orb_data *orb, orb_object_list *list, orb_object *obj);
 
 #endif
