@@ -111,6 +111,17 @@ void orb_avatar_init(orb_data *orb, orb_avatar *av);
 void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av);
 orb_data * orb_data_create();
 
+void orb_avatar_poke(
+    orb_data *orb,
+    orb_avatar *av,
+    orb_motion *m,
+    double mx,
+    double my,
+    double ax,
+    double ay);
+
+/* synth */
+
 void orb_synth_destroy(orb_data *orb);
 void orb_synth_create(void *ud, orb_data *orb);
 

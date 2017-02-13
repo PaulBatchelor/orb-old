@@ -26,6 +26,7 @@ add_library(native-audio-jni SHARED
     src/main/cpp/src/motion.c
     src/main/cpp/src/cstack.c
     src/main/cpp/src/object.c
+    src/main/cpp/src/avatar.c
 )
 
 add_library( # Sets the name of the library.
