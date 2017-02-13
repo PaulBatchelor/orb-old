@@ -42,6 +42,7 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     orb->dtime = orb_dtime(orb);
+    orb_avatar_collisions(orb, &orb->list, &orb->av);
     nvgBeginFrame(vg, w, h, 1);
 
 

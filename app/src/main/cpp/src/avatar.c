@@ -87,3 +87,107 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     nvgFillColor(vg, orb->color1);
     nvgFill(vg);
 }
+
+void orb_avatar_collisions(orb_data *orb, 
+    orb_object_list *list, 
+    orb_avatar *av)
+{
+    int top;
+    int bottom;
+    int left;
+    int right;
+    int id;
+    int x;
+    int y;
+
+    id = orb_avatar_find(orb, av, &x, &y);
+    orb_grid_bounds_detection(orb, x, y, &top, &bottom, &left, &right);
+
+    if(!top) {
+        orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH);
+        if(!left) {
+            orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH - 1);
+        }
+        if(!right) {
+            orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH + 1);
+        }
+    }
+
+    if(!bottom) {
+        orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH);
+        if(!left) {
+            orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH - 1);
+        }
+        if(!right) {
+            orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH + 1);
+        }
+    }
+
+    if(!left) {
+        orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH - 1);
+    }
+
+    if(!right) {
+        orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH + 1);
+    }
+}
+
+static int p_id = -1;
+void orb_avatar_check_collision(orb_data *orb, 
+    orb_object_list *list, 
+    orb_avatar *av,
+    int pos)
+{
+    double x_a;
+    double y_a;
+
+    double x_b;
+    double y_b;
+
+    double dist;
+    orb_object *obj;
+    int id;
+
+    /* first, see if there is anything. */
+    id = orb_object_list_get(orb, list, &obj, pos);
+    if(id < 0) {
+        return;
+    }
+
+    /* avatar coordinates */ 
+    x_a = av->x_pos;
+    y_a = av->y_pos;
+
+    /* block coordinates */
+    x_b = orb_grid_x(orb, obj->x);
+    y_b = orb_grid_y(orb, obj->y);
+    /* find euclidean distance */
+    dist = sqrt((x_b - x_a)*(x_b - x_a) + (y_b - y_a) * (y_b - y_a));
+    /* if within circle radius, it's a collision */
+    if(dist < av->radius * 1.5 && p_id != id) {
+        /* collide! */
+        printf("collide!\n");
+        p_id = id;
+    }
+
+
+}
+
+int orb_avatar_find(orb_data *orb, orb_avatar *av, int *x, int *y)
+{
+    double xr;
+    double yr;
+    int id;
+    double g;
+
+    xr = av->x_pos;
+    yr = av->y_pos;
+
+    g = orb_grid_size(orb);
+    *x = floor(xr / g);
+    *y = floor(yr / g);
+
+    id = orb_grid_pos(orb, *x, *y);
+
+    return id;
+}
