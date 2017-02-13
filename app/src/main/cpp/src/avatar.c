@@ -107,7 +107,6 @@ void orb_avatar_collisions(orb_data *orb,
     double snap_y;
     double block_x;
     double block_y;
-    double eps;
 
     id = orb_avatar_find(orb, av, &x, &y);
 
@@ -118,7 +117,6 @@ void orb_avatar_collisions(orb_data *orb,
     snapped_y = 0;
     block_x = orb_grid_x(orb, x);
     block_y = orb_grid_y(orb, y);
-    eps = orb_grid_size(orb) * 0.1;
 
     orb_grid_bounds_detection(orb, x, y, &top, &bottom, &left, &right);
 
