@@ -163,14 +163,13 @@ void orb_avatar_check_collision(orb_data *orb,
     y_b = orb_grid_y(orb, obj->y);
     /* find euclidean distance */
     dist = sqrt((x_b - x_a)*(x_b - x_a) + (y_b - y_a) * (y_b - y_a));
+
     /* if within circle radius, it's a collision */
     if(dist < av->radius * 1.5 && p_id != id) {
         /* collide! */
         printf("collide!\n");
         p_id = id;
     }
-
-
 }
 
 int orb_avatar_find(orb_data *orb, orb_avatar *av, int *x, int *y)
