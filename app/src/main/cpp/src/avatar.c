@@ -22,8 +22,7 @@ void orb_avatar_poke(
     double q_y;
     double amt;
 
-    //amt = 4.0;
-    amt = 1.0;
+    amt = 4.0;
     force_x = 0;
     force_y = 0;
 
@@ -62,6 +61,7 @@ void orb_avatar_init(orb_data *orb, orb_avatar *av)
     av->x_pos = 0.5 * orb->width;
     av->y_pos = 0.5 * orb->height;
     av->radius = orb_grid_size(orb);
+    av->ir = av->radius;
     av->phs = 0;
     av->env = 0;
 }
@@ -100,27 +100,8 @@ void orb_avatar_collisions(orb_data *orb,
     int id;
     int x;
     int y;
-    int rc;
-    int snapped_x;
-    int snapped_y;
-    double snap_x;
-    double snap_y;
-    double block_x;
-    double block_y;
-    double eps;
 
     id = orb_avatar_find(orb, av, &x, &y);
-    
-    eps = orb_grid_size(orb) * 1.005;
-
-    snap_y = 0;
-    snap_x = 0;
-
-    snapped_x = 0;
-    snapped_y = 0;
-    block_x = orb_grid_x(orb, x);
-    block_y = orb_grid_y(orb, y);
-
     orb_grid_bounds_detection(orb, x, y, &top, &bottom, &left, &right);
 
     if(orb_avatar_check_collision(orb, list, av, id)) {
@@ -128,46 +109,39 @@ void orb_avatar_collisions(orb_data *orb,
         return;
     }
 
-    rc = 0;
     if(!top) {
-        rc += orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH);
+        orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH);
         if(!left) {
-            rc += orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH - 1);
+            orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH - 1);
         }
         if(!right) {
-            rc += orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH + 1);
+            orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH + 1);
         }
 
     }
 
     if(!bottom) {
-        rc += orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH);
+        orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH);
         if(!left) {
-            rc += orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH - 1);
+            orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH - 1);
         }
         if(!right) {
-            rc += orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH + 1);
+            orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH + 1);
         }
     }
 
     if(!left) {
-        if(orb_avatar_check_collision(orb, list, av, id - 1) > 0) {
-            snap_x = block_x + orb_grid_size(orb);
-            snapped_x = 1;
-        }
+        orb_avatar_check_collision(orb, list, av, id - 1);
     }
 
     if(!right) {
-        if(orb_avatar_check_collision(orb, list, av, id + 1) > 0) {
-            snap_x = block_x;
-            snapped_x = 1;
-        }
+        orb_avatar_check_collision(orb, list, av, id + 1);
     }
+}
 
-    if(rc > 0) {
-        /* if any collisions have happend, check to see that */
-        //orb_motion_jump(orb, &orb->motion, &av->x_pos, &av->y_pos, 10);
-    }
+static double euclid(double x_a, double y_a, double x_b, double y_b)
+{
+    return sqrt((x_b - x_a)*(x_b - x_a) + (y_b - y_a) * (y_b - y_a));
 }
 
 int orb_avatar_check_collision(orb_data *orb, 
@@ -184,7 +158,15 @@ int orb_avatar_check_collision(orb_data *orb,
     double dist;
     orb_object *obj;
     int id;
+    char collision = 0;
+    int x, y;
+    double grid_size;
+    double m;
+    double tmp;
+    double d;
+    orb_motion *motion;
 
+    motion = &orb->motion;
     /* first, see if there is anything. */
     id = orb_object_list_get(orb, list, &obj, pos);
     if(id < 0) {
@@ -196,17 +178,38 @@ int orb_avatar_check_collision(orb_data *orb,
     y_a = av->y_pos;
 
     /* block coordinates */
-    x_b = orb_grid_x(orb, obj->x) + orb_grid_size(orb) * 0.5;
-    y_b = orb_grid_y(orb, obj->y) + orb_grid_size(orb) * 0.5;
-    /* find euclidean distance */
-    dist = sqrt((x_b - x_a)*(x_b - x_a) + (y_b - y_a) * (y_b - y_a));
+
+    grid_size = orb_grid_size(orb);
+    for(y = 0; y < 2; y++) {
+        for(x = 0; x < 2; x++) {
+            x_b = orb_grid_x(orb, obj->x + x);
+            y_b = orb_grid_y(orb, obj->y + y);
+            dist = euclid(x_a, y_a, x_b, y_b);
+            if(dist < av->ir) {
+                d = 0.09 * grid_size;
+                tmp = sqrt(motion->vel_x * motion->vel_x + 
+                        motion->vel_y * motion->vel_y);
+
+
+                if(tmp == 0) {
+                    orb_motion_repel(orb, motion, 1.0);
+                } else {
+                    m = sqrt(2.0 * (d*d)) / tmp;
+                    av->x_pos += -m * motion->vel_x;
+                    av->y_pos += -m * motion->vel_y;
+                }
+
+                collision = 1;
+                break;
+            }
+        }
+    }
 
     /* if within circle radius, it's a collision */
-    if(dist < av->radius * 1.7) {
-        /* collide! */
-        orb_collide(orb, list, av, obj, id);
-        return 1;
-    }
+        if(collision) { 
+            orb_collide(orb, list, av, obj, id);
+            return 1;
+        }
     return 0;
 }
 
@@ -218,7 +221,7 @@ int orb_avatar_find(orb_data *orb, orb_avatar *av, int *x, int *y)
     double g;
 
     xr = av->x_pos;
-    yr = av->y_pos;
+    yr = av->y_pos - orb->bias;
 
     g = orb_grid_size(orb);
     *x = floor(xr / g);

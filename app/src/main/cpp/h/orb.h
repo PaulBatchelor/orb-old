@@ -30,6 +30,7 @@ typedef struct {
     double x_pos;
     double y_pos;
     double radius;
+    double ir;
     double phs;
     double env;
 } orb_avatar;
