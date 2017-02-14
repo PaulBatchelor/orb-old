@@ -36,14 +36,11 @@ void error(char *msg) {
 
 static int jack_cb(jack_nframes_t nframes, void *arg)
 {
-    int i, chan;
+    int chan;
     jack_data *jack = arg;
     orb_data *orb = jack->orb;
 
     jack_default_audio_sample_t  *out[2];
-    jack_default_audio_sample_t  *in;
-
-    in = jack_port_get_buffer(jack->input_port, nframes);
 
     for(chan = 0; chan < 2; chan++)
         out[chan] = jack_port_get_buffer (jack->output_port[chan], nframes);
