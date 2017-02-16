@@ -58,8 +58,8 @@ void orb_avatar_poke(
 
 void orb_avatar_init(orb_data *orb, orb_avatar *av)
 {
-    av->x_pos = 0.5 * orb->width;
-    av->y_pos = 0.5 * orb->height;
+    av->x_pos = orb_grid_x(orb, 0);
+    av->y_pos = orb_grid_y(orb, 0);
     av->radius = orb_grid_size(orb);
     av->ir = av->radius;
     av->phs = 0;
@@ -71,8 +71,8 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     orb_motion_step(orb, &orb->motion, &av->x_pos, &av->y_pos);
 
     if(av->env > 0.001) {
-        av->radius = orb_grid_size(orb) + 
-            (0.5 * (1 + cos(av->phs)) * orb_grid_size(orb) * 0.04) * av->env;
+        av->radius = av->ir + 
+            (0.5 * (1 + cos(av->phs)) * av->ir * 0.04) * av->env;
         av->phs = fmod(av->phs + (av->env * 25.0 * orb->dtime), 2 * M_PI);
         av->env *= pow(0.3, orb->dtime);
     }
@@ -80,7 +80,7 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     orb_motion_bounce_edges(orb, &orb->motion, 
         &av->x_pos, 
         &av->y_pos, 
-        orb_grid_size(orb));
+        av->ir);
 
     nvgBeginPath(vg);
     nvgArc(vg, av->x_pos, av->y_pos, av->radius, 0, 2 * M_PI, NVG_CCW);
@@ -102,6 +102,11 @@ void orb_avatar_collisions(orb_data *orb,
     int y;
 
     id = orb_avatar_find(orb, av, &x, &y);
+    if(id + GRID_WIDTH> GRID_SIZE) {
+        LOGI("uh-oh again... id is %d, grid size is %d\n", 
+                id + GRID_WIDTH, GRID_SIZE);
+    }
+  
     orb_grid_bounds_detection(orb, x, y, &top, &bottom, &left, &right);
 
     if(orb_avatar_check_collision(orb, list, av, id)) {
@@ -173,6 +178,8 @@ int orb_avatar_check_collision(orb_data *orb,
         return 0;
     }
 
+    //LOGI("pos is %d, id is %d\n", pos, id);
+
     /* avatar coordinates */ 
     x_a = av->x_pos;
     y_a = av->y_pos;
@@ -206,13 +213,13 @@ int orb_avatar_check_collision(orb_data *orb,
     }
 
     /* if within circle radius, it's a collision */
-        if(collision) { 
-            orb_collide(orb, list, av, obj, id);
-            return 1;
-        }
+    if(collision) { 
+        LOGI("pos is %d\n", pos);
+        orb_collide(orb, list, av, obj, id);
+        return 1;
+    }
     return 0;
 }
-
 int orb_avatar_find(orb_data *orb, orb_avatar *av, int *x, int *y)
 {
     double xr;

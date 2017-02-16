@@ -34,5 +34,8 @@ install:
 	cd ../../../../; ./gradlew installDebug
 	adb shell am start -n com.paulbatchelor.orb/.MainActivity
 
+monitor: 
+	adb logcat -s "orb" orb:I
+
 clean:
 	rm -rf orb $(OBJ)

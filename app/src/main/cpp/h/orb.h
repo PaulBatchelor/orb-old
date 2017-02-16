@@ -3,6 +3,16 @@
 
 #include <sys/time.h>
 
+#ifdef BUILD_ANDROID
+/* android logging */
+#include <android/log.h>
+#define  LOG_TAG    "orb"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#else
+#include <stdio.h>
+#define LOGI(...) printf(__VA_ARGS__);
+#endif
+
 #ifndef SP_SYNTH_STRUCT
 #define SP_SYNTH_STRUCT
 typedef struct sp_synth sp_synth;
@@ -74,7 +84,7 @@ typedef struct {
     int start;
     int nobjects;
     int nextfree;
-    char map[GRID_SIZE];
+    signed char map[GRID_SIZE];
 } orb_object_list;
 
 struct orb_data {
