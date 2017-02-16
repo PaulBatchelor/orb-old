@@ -9,6 +9,20 @@ void orb_object_set(orb_data *orb, orb_object *obj, int x, int y, int type)
     obj->type = type;
 }
 
+void orb_object_off(NVGcontext *vg, orb_data *orb, orb_object *obj)
+{
+    nvgBeginPath(vg);
+    nvgRect(vg, 
+        orb_grid_x(orb, obj->x), 
+        orb_grid_y(orb, obj->y), 
+        orb_grid_size(orb), 
+        orb_grid_size(orb)); 
+    nvgClosePath(vg);
+    nvgStrokeWidth(vg, 4.0);
+    nvgStrokeColor(vg, orb->color1);
+    nvgStroke(vg);
+}
+
 void orb_object_draw(NVGcontext *vg, orb_data *orb, orb_object *obj)
 {
     nvgBeginPath(vg);
@@ -28,6 +42,7 @@ void orb_object_list_init(orb_data *orb, orb_object_list *list)
     list->nobjects = 0;
     list->nextfree = 0;
     list->draw[ORB_SQUARE] = orb_object_draw;
+    list->draw[ORB_OFFSQUARE] = orb_object_off;
     for(i = 0; i < GRID_SIZE; i++) list->map[i] = -1;
 }
 
@@ -74,6 +89,21 @@ int orb_object_add_square(orb_data *orb, orb_object_list *list, int x, int y)
     if(id < 0) return -1;
 
     orb_object_set(orb, obj, x, y, ORB_SQUARE);
+    obj->id = id;
+    orb_object_list_map(orb, list, obj);
+
+    return id;
+}
+
+int orb_object_add_offsquare(orb_data *orb, orb_object_list *list, int x, int y)
+{
+    orb_object *obj;
+    int id;
+
+    id = orb_object_new(orb, list, &obj);
+    if(id < 0) return -1;
+
+    orb_object_set(orb, obj, x, y, ORB_OFFSQUARE);
     obj->id = id;
     orb_object_list_map(orb, list, obj);
 

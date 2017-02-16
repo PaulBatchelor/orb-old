@@ -19,6 +19,7 @@ typedef struct orb_data orb_data;
 
 enum {
 ORB_SQUARE = 0,
+ORB_OFFSQUARE
 };
 
 typedef struct {

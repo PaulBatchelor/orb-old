@@ -74,7 +74,7 @@ void orb_init(orb_data *orb, int sr)
     gettimeofday(&orb->tv, NULL);
     orb_object_list_init(orb, &orb->list);
     orb->id[0] = orb_object_add_square(orb, &orb->list, 4, 4);
-    orb->id[1] = orb_object_add_square(orb, &orb->list, 11, 4);
+    orb->id[1] = orb_object_add_offsquare(orb, &orb->list, 10, 4);
 }
 
 void orb_destroy(orb_data *orb)
@@ -113,8 +113,8 @@ void orb_collide(orb_data *orb,
     int pos)
 {
     if(obj->id == orb->id[0]) {
-        orb_motion_repel(orb, &orb->motion, 1);
-    } else {
         orb_motion_repel(orb, &orb->motion, 0.2);
+    } else {
+        orb_motion_repel(orb, &orb->motion, 1);
     }
 }
