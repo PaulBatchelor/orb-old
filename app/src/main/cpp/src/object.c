@@ -11,14 +11,21 @@ void orb_object_set(orb_data *orb, orb_object *obj, int x, int y, int type)
 
 void orb_object_off(NVGcontext *vg, orb_data *orb, orb_object *obj)
 {
+    double grid_size;
+    double line_width;
+    double line_width2;
+
+    grid_size = orb_grid_size(orb);
+    line_width = grid_size * 0.08;
+    line_width2 = line_width * 0.5;
     nvgBeginPath(vg);
     nvgRect(vg, 
-        orb_grid_x(orb, obj->x), 
-        orb_grid_y(orb, obj->y), 
-        orb_grid_size(orb), 
-        orb_grid_size(orb)); 
+        orb_grid_x(orb, obj->x) + line_width2, 
+        orb_grid_y(orb, obj->y) + line_width2, 
+        grid_size - line_width, 
+        grid_size - line_width); 
     nvgClosePath(vg);
-    nvgStrokeWidth(vg, orb_grid_size(orb) * 0.08);
+    nvgStrokeWidth(vg, line_width);
     nvgStrokeColor(vg, orb->color1);
     nvgStroke(vg);
 }
