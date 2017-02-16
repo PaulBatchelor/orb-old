@@ -118,6 +118,7 @@ void orb_synth_set_vals(orb_data *orb);
 void orb_init(orb_data *orb, int sr);
 void orb_destroy(orb_data *orb);
 void orb_poke(orb_data *orb);
+void orb_resize(orb_data *orb);
 
 /* orb avatar */
 

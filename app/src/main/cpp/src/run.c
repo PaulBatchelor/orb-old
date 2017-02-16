@@ -126,3 +126,10 @@ void orb_collide(orb_data *orb,
         obj->type = ORB_SQUARE;
     }
 }
+
+void orb_resize(orb_data *orb)
+{
+    orb->av.ir = orb_grid_size(orb);
+    orb->av.radius = orb->av.ir;
+    orb->cstack.irad = (double)orb_grid_size(orb);
+}
