@@ -118,7 +118,6 @@ void orb_collide(orb_data *orb,
         orb_motion_repel(orb, &orb->motion, 0.2);
     } else {
         orb_motion_repel(orb, &orb->motion, 1);
-        LOGI("REPEL id %d\n", obj->id);
     }
 
     if(obj->type == ORB_SQUARE) {

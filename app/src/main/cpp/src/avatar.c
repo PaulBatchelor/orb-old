@@ -102,13 +102,8 @@ void orb_avatar_collisions(orb_data *orb,
     int y;
 
     id = orb_avatar_find(orb, av, &x, &y);
-    if(id + GRID_WIDTH> GRID_SIZE) {
-        LOGI("uh-oh again... id is %d, grid size is %d\n", 
-                id + GRID_WIDTH, GRID_SIZE);
-    }
-  
     orb_grid_bounds_detection(orb, x, y, &top, &bottom, &left, &right);
-
+    
     if(orb_avatar_check_collision(orb, list, av, id)) {
         /* if we are right *on* the square, trouble is to be had... */
         return;
@@ -178,8 +173,6 @@ int orb_avatar_check_collision(orb_data *orb,
         return 0;
     }
 
-    //LOGI("pos is %d, id is %d\n", pos, id);
-
     /* avatar coordinates */ 
     x_a = av->x_pos;
     y_a = av->y_pos;
@@ -214,7 +207,6 @@ int orb_avatar_check_collision(orb_data *orb,
 
     /* if within circle radius, it's a collision */
     if(collision) { 
-        LOGI("pos is %d\n", pos);
         orb_collide(orb, list, av, obj, id);
         return 1;
     }
