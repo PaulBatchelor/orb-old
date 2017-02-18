@@ -9,7 +9,7 @@ CFLAGS += -Wno-implicit-function-declaration
 HFILES = h/orb.h h/synth.h
 
 SRC = main.c run.c jack.c audio.c synth.c vals.c grid.c motion.c cstack.c \
-	  object.c avatar.c
+	  object.c avatar.c fsm.c orb_fsm.c
 
 OBJ = $(addprefix src/,$(SRC:.c=.o))
 
@@ -33,6 +33,9 @@ h/synth.h: src/synth.c
 install:
 	cd ../../../../; ./gradlew installDebug
 	adb shell am start -n com.paulbatchelor.orb/.MainActivity
+
+fsm_test: src/fsm_test.c src/fsm.o
+	$(CC) $(CFLAGS) $< -o $@ src/fsm.o 
 
 monitor: 
 	adb logcat -s "orb" orb:I

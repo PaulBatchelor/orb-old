@@ -3,6 +3,8 @@
 
 #include <sys/time.h>
 
+#include "fsm.h"
+
 #ifdef BUILD_ANDROID
 /* android logging */
 #include <android/log.h>
@@ -74,6 +76,7 @@ typedef struct {
     double y;
     int next;
     int id;
+    uint32_t fsm_pos;
 } orb_object;
 
 typedef void (orb_draw) (NVGcontext *vg, orb_data *, orb_object *);
@@ -104,7 +107,8 @@ struct orb_data {
     struct timeval tv;
     double dtime;
     orb_object_list list;
-    int id[2];
+    int id[6];
+    fsm_data fs;
 };
 
 
@@ -189,6 +193,8 @@ void orb_cstack_display(NVGcontext *vg, orb_data *orb, orb_cstack *stack);
 
 void orb_object_set(orb_data *orb, orb_object *obj, int x, int y, int type);
 void orb_object_draw(NVGcontext *vg, orb_data *orb, orb_object *obj);
+void orb_object_set_type(orb_data *orb, int id, int type);
+void orb_object_set_fsm_pos(orb_data *orb, int id, uint32_t pos);
 
 void orb_object_list_init(orb_data *orb, orb_object_list *list);
 void orb_object_list_draw(NVGcontext *vg, orb_data *orb, orb_object_list *list);
@@ -203,5 +209,10 @@ void orb_collide(orb_data *orb,
     orb_object_list *list, orb_avatar *av, 
     orb_object *obj,
     int id);
+
+
+/* Finite State Machine */
+
+void orb_fsm_update(orb_data *orb);
 
 #endif

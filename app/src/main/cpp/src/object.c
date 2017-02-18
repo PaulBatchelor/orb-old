@@ -135,3 +135,23 @@ int orb_object_list_get(orb_data *orb, orb_object_list *list,
     *obj = o;
     return id;
 }
+
+void orb_object_set_type(orb_data *orb, int id, int type)
+{
+    orb_object_list *list;
+    orb_object *obj;
+    
+    list = &orb->list;
+    obj = &list->obj[id];
+    obj->type = type;
+}
+
+void orb_object_set_fsm_pos(orb_data *orb, int id, uint32_t pos)
+{
+    orb_object_list *list;
+    orb_object *obj;
+
+    list = &orb->list;
+    obj = &list->obj[id];
+    obj->fsm_pos = pos;
+}
