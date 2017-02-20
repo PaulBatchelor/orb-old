@@ -281,3 +281,11 @@ function SP:osc(name, ft, freq, amp, phs)
         ivar(fp, n, amp, "amp")
     end)
 end
+
+function SP:revscm(name, decay, cutoff)
+    return SP:new(name, "revscm", {}, 
+    function (fp, n)
+        ivar(fp, n, decay, "feedback")
+        ivar(fp, n, cutoff, "lpfreq")
+    end)
+end

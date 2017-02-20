@@ -21,6 +21,7 @@ add_library(native-audio-jni SHARED
     src/main/cpp/h/orb.h 
     src/main/cpp/h/fsm.h 
     src/main/cpp/h/modal.h 
+    src/main/cpp/h/revscm.h 
     src/main/cpp/src/audio.c 
     src/main/cpp/src/run.c
     src/main/cpp/src/vals.c
@@ -32,6 +33,7 @@ add_library(native-audio-jni SHARED
     src/main/cpp/src/fsm.c
     src/main/cpp/src/orb_fsm.c
     src/main/cpp/src/modal.c
+    src/main/cpp/src/revscm.c
 )
 
 add_library( # Sets the name of the library.

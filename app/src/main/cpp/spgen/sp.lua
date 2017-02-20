@@ -264,6 +264,7 @@ function SP:print_synth(synth, callback, num)
     fp:write("#include <math.h>\n")
     fp:write("#include \"soundpipe.h\"\n")
     fp:write("#include \"modal.h\"\n")
+    fp:write("#include \"revscm.h\"\n")
     fp:write("#include \"synth.h\"\n")
 
     num = num or 4

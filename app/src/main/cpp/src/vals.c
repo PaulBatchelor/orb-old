@@ -6,6 +6,7 @@
 
 #include "soundpipe.h"
 #include "modal.h"
+#include "revscm.h"
 #include "synth.h"
 
 void orb_synth_create(void *ud, orb_data *orb)
