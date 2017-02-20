@@ -42,3 +42,4 @@ monitor:
 
 clean:
 	rm -rf orb $(OBJ)
+	rm -rf fsm_test
