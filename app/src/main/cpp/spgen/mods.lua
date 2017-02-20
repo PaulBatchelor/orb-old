@@ -125,6 +125,14 @@ function SP:scale(var, min, max)
     end
 end
 
+function SP:biscale(var, min, max)
+    if(type(var) ~= "number") then
+        return string.format("0.5 * (%g + 1)  + (%s * %g)", min, var:obj(), (max - min))
+    else 
+        return string.format("0.5 * (%g + 1) + (tmp[%d] * %g)", min, var, (max - min))
+    end
+end
+
 function SP:osc(name, ft, freq, amp, phase)
     freq = freq or 440
     amp = amp or 0.2
@@ -175,6 +183,12 @@ end
 function SP:mul(v1, v2, v3)
     print8(self.c, string.format("tmp[%d] = tmp[%d] * tmp[%d];", v1, v2, v3))
 end
+
+function SP:var_biscale(var, min, max)
+    print8(self.c, string.format("tmp[%d] = %g+ (0.5 * (tmp[%d] + 1)) * %g;", 
+        min, var, var, (max - min)))
+end
+
 
 function SP:get_vars(x, val)
     local varstr
@@ -231,5 +245,39 @@ end
 function SP:modal(name, freq)
     return SP:new(name, "modal", {}, 
     function (fp, n)
+    end)
+end
+
+function SP:randi(name, min, max, freq)
+    return SP:new(name, "randi", {}, 
+    function (fp, n)
+        ivar(fp, n, min, "min")
+        ivar(fp, n, max, "max")
+        ivar(fp, n, freq, "cps")
+    end)
+end
+
+function SP:tenv(name, atk, hold, rel)
+    return SP:new(name, "tenv", {}, 
+    function (fp, n)
+        ivar(fp, n, atk, "atk")
+        ivar(fp, n, hold, "hold")
+        ivar(fp, n, rel, "rel")
+    end)
+end
+
+function SP:dmetro(name, time)
+    return SP:new(name, "dmetro", {}, 
+    function (fp, n)
+        ivar(fp, n, time, "time")
+    end)
+end
+
+
+function SP:osc(name, ft, freq, amp, phs)
+    return SP:new(name, "osc", {ft:obj(), phs}, 
+    function (fp, n)
+        ivar(fp, n, freq, "freq")
+        ivar(fp, n, amp, "amp")
     end)
 end

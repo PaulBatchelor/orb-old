@@ -22,7 +22,7 @@ void orb_avatar_poke(
     double q_y;
     double amt;
 
-    amt = 4.0;
+    amt = 3.0;
     force_x = 0;
     force_y = 0;
 
@@ -60,7 +60,7 @@ void orb_avatar_init(orb_data *orb, orb_avatar *av)
 {
     av->x_pos = orb_grid_x(orb, 0);
     av->y_pos = orb_grid_y(orb, 0);
-    av->radius = orb_grid_size(orb);
+    av->radius = orb_grid_size(orb) * 0.7;
     av->ir = av->radius;
     av->phs = 0;
     av->env = 0;

@@ -204,6 +204,7 @@ function print_init(fp, synth)
     fp:write("int sp_synth_init(sp_data *sp, sp_synth *synth)\n")
     fp:write("{\n")
 
+    fp:write("    " .. "synth->sp = sp;\n")
     for k,v in pairs(synth) do
         str = v:init()
         if(str ~= nil) then fp:write("    " .. str .. "\n") end

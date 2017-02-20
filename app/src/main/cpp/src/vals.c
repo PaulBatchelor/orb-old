@@ -38,9 +38,8 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
     m = synth->mode;
     motion = &orb->motion;
 
-    amp = ((fabs(motion->vel_y) + fabs(motion->vel_x)) * 0.5) * 0.2;
+    amp = ((fabs(motion->vel_y) + fabs(motion->vel_x)) * 0.5) * 0.3;
         
-    LOGI("amp: %g\n", amp);
     m->amp = amp;
 
 
@@ -57,4 +56,22 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
         m->gate = 0;
     }
 
+}
+
+void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3)
+{
+    sp_synth *synth;
+   
+    synth = orb->synth;
+
+    synth->freq1 = sp_midi2cps(n1);
+    synth->freq2 = sp_midi2cps(n2);
+
+    synth->mode->metal[0] = sp_midi2cps(n3) * 2;
+    synth->mode->metal[1] = sp_midi2cps(n3) * 2;
+    synth->mode->metal[2] = sp_midi2cps(n3) * 2.5;
+    synth->mode->metal[3] = sp_midi2cps(n3) * 2.5;
+    
+    synth->mode->metal[4] = sp_midi2cps(n3);
+    synth->mode->metal[6] = sp_midi2cps(n3) * 0.5;
 }

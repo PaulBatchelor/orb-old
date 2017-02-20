@@ -73,16 +73,20 @@ void orb_init(orb_data *orb, int sr)
     orb_cstack_init(orb, &orb->cstack);
     gettimeofday(&orb->tv, NULL);
     orb_object_list_init(orb, &orb->list);
-    orb->id[0] = orb_object_add_offsquare(orb, &orb->list, 4, 4);
-    orb->id[1] = orb_object_add_square(orb, &orb->list, 11, 4);
-    orb->id[2] = orb_object_add_square(orb, &orb->list, 9, 2);
+    orb->id[0] = orb_object_add_offsquare(orb, &orb->list, 4, 2);
+    orb->id[1] = orb_object_add_square(orb, &orb->list, 10, 6);
+    orb->id[2] = orb_object_add_square(orb, &orb->list, 10, 2);
+    orb->id[3] = orb_object_add_square(orb, &orb->list, 4, 6);
 
     fsm_create(&orb->fs, 5);
-    fsm_init(&orb->fs, 3);
+    fsm_init(&orb->fs, 4);
     fsm_add_rule(&orb->fs, 1, 2);
     fsm_add_rule(&orb->fs, 1, 3);
+    fsm_add_rule(&orb->fs, 1, 4);
     fsm_add_rule(&orb->fs, 2, 3);
-    fsm_add_rule(&orb->fs, 3, 1);
+    fsm_add_rule(&orb->fs, 2, 1);
+    fsm_add_rule(&orb->fs, 3, 4);
+    fsm_add_rule(&orb->fs, 4, 1);
 
     fsm_assign_id(&orb->fs, 1, orb->id[0]);
     orb_object_set_fsm_pos(orb, orb->id[0], 1);
@@ -92,9 +96,14 @@ void orb_init(orb_data *orb, int sr)
     
     fsm_assign_id(&orb->fs, 3, orb->id[2]);
     orb_object_set_fsm_pos(orb, orb->id[2], 3);
+    
+    fsm_assign_id(&orb->fs, 4, orb->id[3]);
+    orb_object_set_fsm_pos(orb, orb->id[3], 4);
 
-    fsm_set_state(&orb->fs, 2);
+    fsm_set_state(&orb->fs, 4);
     orb_fsm_update(orb);
+
+    orb_synth_set_notes(orb, 60, 67, 74);
 }
 
 void orb_destroy(orb_data *orb)
@@ -128,13 +137,16 @@ void orb_poke(orb_data *orb)
     }
 }
 
+static int count = 0;
+static int chord = 0;
 void orb_collide(orb_data *orb, 
     orb_object_list *list, orb_avatar *av, 
     orb_object *obj,
     int pos)
 {
     if(obj->type == ORB_SQUARE) {
-        orb_motion_repel(orb, &orb->motion, 1);
+        orb_motion_repel(orb, &orb->motion, 1.01);
+        count++;
     } else {
         orb_motion_repel(orb, &orb->motion, .3);
     }
@@ -142,11 +154,22 @@ void orb_collide(orb_data *orb,
     orb_synth_collide(orb, obj);
     fsm_compute_state(&orb->fs, obj->fsm_pos);
     orb_fsm_update(orb);
+
+    if(count == 4) {
+        if(chord == 0) {
+            orb_synth_set_notes(orb, 62, 69, 76);
+            chord = 1;
+        } else {
+            orb_synth_set_notes(orb, 60, 67, 74);
+            chord = 0;
+        }
+        count = 0;
+    }
 }
 
 void orb_resize(orb_data *orb)
 {
-    orb->av.ir = orb_grid_size(orb);
+    orb->av.ir = orb_grid_size(orb) * 0.7;
     orb->av.radius = orb->av.ir;
     orb->cstack.irad = (double)orb_grid_size(orb);
 }
