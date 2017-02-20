@@ -147,6 +147,16 @@ void orb_collide(orb_data *orb,
     if(obj->type == ORB_SQUARE) {
         orb_motion_repel(orb, &orb->motion, 1.01);
         count++;
+        if(count == 4) {
+            if(chord == 0) {
+                orb_synth_set_notes(orb, 62, 69, 71, 76);
+                chord = 1;
+            } else {
+                orb_synth_set_notes(orb, 60, 67, 62, 74);
+                chord = 0;
+            }
+            count = 0;
+        }
     } else {
         orb_motion_repel(orb, &orb->motion, .3);
     }
@@ -155,16 +165,6 @@ void orb_collide(orb_data *orb,
     fsm_compute_state(&orb->fs, obj->fsm_pos);
     orb_fsm_update(orb);
 
-    if(count == 4) {
-        if(chord == 0) {
-            orb_synth_set_notes(orb, 62, 69, 71, 76);
-            chord = 1;
-        } else {
-            orb_synth_set_notes(orb, 60, 67, 62, 74);
-            chord = 0;
-        }
-        count = 0;
-    }
 }
 
 void orb_resize(orb_data *orb)
