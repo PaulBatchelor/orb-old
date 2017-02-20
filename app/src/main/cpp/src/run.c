@@ -103,7 +103,7 @@ void orb_init(orb_data *orb, int sr)
     fsm_set_state(&orb->fs, 4);
     orb_fsm_update(orb);
 
-    orb_synth_set_notes(orb, 60, 67, 74);
+    orb_synth_set_notes(orb, 60, 67, 69, 74);
 }
 
 void orb_destroy(orb_data *orb)
@@ -157,10 +157,10 @@ void orb_collide(orb_data *orb,
 
     if(count == 4) {
         if(chord == 0) {
-            orb_synth_set_notes(orb, 62, 69, 76);
+            orb_synth_set_notes(orb, 62, 69, 71, 76);
             chord = 1;
         } else {
-            orb_synth_set_notes(orb, 60, 67, 74);
+            orb_synth_set_notes(orb, 60, 67, 62, 74);
             chord = 0;
         }
         count = 0;

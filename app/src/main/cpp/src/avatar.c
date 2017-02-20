@@ -22,7 +22,7 @@ void orb_avatar_poke(
     double q_y;
     double amt;
 
-    amt = 3.0;
+    amt = 2.7;
     force_x = 0;
     force_y = 0;
 

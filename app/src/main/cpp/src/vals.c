@@ -39,7 +39,7 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
     m = synth->mode;
     motion = &orb->motion;
 
-    amp = ((fabs(motion->vel_y) + fabs(motion->vel_x)) * 0.5) * 0.3;
+    amp = ((fabs(motion->vel_y) + fabs(motion->vel_x)) * 0.5) * 0.8;
         
     m->amp = amp;
 
@@ -59,7 +59,7 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
 
 }
 
-void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3)
+void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3, int top)
 {
     sp_synth *synth;
    
@@ -67,12 +67,13 @@ void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3)
 
     synth->freq1 = sp_midi2cps(n1);
     synth->freq2 = sp_midi2cps(n2);
+    synth->freq3 = sp_midi2cps(n3);
 
-    synth->mode->metal[0] = sp_midi2cps(n3) * 2;
-    synth->mode->metal[1] = sp_midi2cps(n3) * 2;
-    synth->mode->metal[2] = sp_midi2cps(n3) * 2.5;
-    synth->mode->metal[3] = sp_midi2cps(n3) * 2.5;
+    synth->mode->metal[0] = sp_midi2cps(top) * 2;
+    synth->mode->metal[1] = sp_midi2cps(top) * 2;
+    synth->mode->metal[2] = sp_midi2cps(top) * 2.5;
+    synth->mode->metal[3] = sp_midi2cps(top) * 2.5;
     
-    synth->mode->metal[4] = sp_midi2cps(n3);
-    synth->mode->metal[6] = sp_midi2cps(n3) * 0.5;
+    synth->mode->metal[4] = sp_midi2cps(top);
+    synth->mode->metal[6] = sp_midi2cps(top) * 0.5;
 }
