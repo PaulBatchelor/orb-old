@@ -227,3 +227,9 @@ function SP:butlp(name, freq)
         ivar(fp, n, freq, "freq")
     end)
 end
+
+function SP:modal(name, freq)
+    return SP:new(name, "modal", {}, 
+    function (fp, n)
+    end)
+end

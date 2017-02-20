@@ -151,6 +151,7 @@ int orb_avatar_check_collision(orb_data *orb,
 
 void orb_synth_destroy(orb_data *orb);
 void orb_synth_create(void *ud, orb_data *orb);
+void orb_synth_collide(orb_data *orb, orb_object *obj);
 
 /* grid */
 

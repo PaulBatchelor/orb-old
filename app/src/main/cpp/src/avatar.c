@@ -72,8 +72,8 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
 
     if(av->env > 0.001) {
         av->radius = av->ir + 
-            (0.5 * (1 + cos(av->phs)) * av->ir * 0.04) * av->env;
-        av->phs = fmod(av->phs + (av->env * 25.0 * orb->dtime), 2 * M_PI);
+            (0.5 * (1 + cos(av->phs)) * av->ir * 0.09) * av->env;
+        av->phs = fmod(av->phs + (av->env * 30.0 * orb->dtime), 2 * M_PI);
         av->env *= pow(0.3, orb->dtime);
     }
 

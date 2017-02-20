@@ -133,9 +133,15 @@ void orb_collide(orb_data *orb,
     orb_object *obj,
     int pos)
 {
+    if(obj->type == ORB_SQUARE) {
+        orb_motion_repel(orb, &orb->motion, 1);
+    } else {
+        orb_motion_repel(orb, &orb->motion, .3);
+    }
+
+    orb_synth_collide(orb, obj);
     fsm_compute_state(&orb->fs, obj->fsm_pos);
     orb_fsm_update(orb);
-    orb_motion_repel(orb, &orb->motion, 1);
 }
 
 void orb_resize(orb_data *orb)
