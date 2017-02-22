@@ -148,8 +148,6 @@ void orb_poke(orb_data *orb)
     }
 }
 
-static int count = 0;
-static int chord = 0;
 void orb_collide(orb_data *orb, 
     orb_object_list *list, orb_avatar *av, 
     orb_object *obj,
@@ -157,17 +155,7 @@ void orb_collide(orb_data *orb,
 {
     if(obj->type == ORB_SQUARE) {
         orb_motion_repel(orb, &orb->motion, 1.01);
-        count++;
-        if(count == 4) {
-            if(chord == 0) {
-                orb_synth_set_notes(orb, 62, 69, 71, 76);
-                chord = 1;
-            } else {
-                orb_synth_set_notes(orb, 60, 67, 62, 74);
-                chord = 0;
-            }
-            count = 0;
-        }
+        orb_synth_set_topnote(orb, obj->note);
     } else {
         orb_motion_repel(orb, &orb->motion, .3);
     }

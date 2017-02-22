@@ -85,6 +85,7 @@ typedef struct {
     int next;
     int id;
     uint32_t fsm_pos;
+    int note;
 } orb_object;
 
 typedef void (orb_draw) (NVGcontext *vg, orb_data *, orb_object *);
@@ -172,7 +173,8 @@ void orb_avatar_center_y(orb_data *orb, orb_avatar *av);
 void orb_synth_destroy(orb_data *orb);
 void orb_synth_create(void *ud, orb_data *orb);
 void orb_synth_collide(orb_data *orb, orb_object *obj);
-void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3, int top);
+void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3);
+void orb_synth_set_topnote(orb_data *orb, int top);
 
 /* grid */
 
@@ -217,6 +219,7 @@ void orb_object_set(orb_data *orb, orb_object *obj, int x, int y, int type);
 void orb_object_draw(NVGcontext *vg, orb_data *orb, orb_object *obj);
 void orb_object_set_type(orb_data *orb, int id, int type);
 void orb_object_set_fsm_pos(orb_data *orb, int id, uint32_t pos);
+void orb_object_set_note(orb_data *orb, int id, int note);
 
 void orb_object_list_init(orb_data *orb, orb_object_list *list);
 void orb_object_list_draw(NVGcontext *vg, orb_data *orb, orb_object_list *list);

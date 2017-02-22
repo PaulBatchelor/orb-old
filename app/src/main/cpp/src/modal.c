@@ -59,6 +59,14 @@ int sp_modal_init(sp_data *sp, sp_modal *m)
     return SP_OK;
 }
 
+static void compute_q(sp_data *sp, sp_modal *m)
+{
+    m->mode[0]->q = m->q[0];
+    m->mode[1]->q = m->q[1];
+    m->mode[2]->q = m->q[2];
+    m->mode[3]->q = m->q[3];
+}
+
 int sp_modal_compute(sp_data *sp, sp_modal *m, SPFLOAT *in, SPFLOAT *out)
 {
     SPFLOAT trig;
@@ -74,6 +82,7 @@ int sp_modal_compute(sp_data *sp, sp_modal *m, SPFLOAT *in, SPFLOAT *out)
 
     m->prev = m->gate;
 
+    //compute_q(sp, m);
     exc = 0;
     sp_mode_compute(sp, m->mode[0], &trig, &tmp);
     exc = tmp;

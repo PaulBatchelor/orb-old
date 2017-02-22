@@ -42,6 +42,7 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
     amp = ((fabs(motion->vel_y) + fabs(motion->vel_x)) * 0.5) * 0.65;
    
     if(amp > 3.0) amp = 3.0;
+    else if(amp < 1.0) amp = 1.0;
     
     m->amp = amp;
 
@@ -63,7 +64,7 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
 
 }
 
-void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3, int top)
+void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3)
 {
     sp_synth *synth;
    
@@ -73,6 +74,13 @@ void orb_synth_set_notes(orb_data *orb, int n1, int n2, int n3, int top)
     synth->freq2 = sp_midi2cps(n2);
     synth->freq3 = sp_midi2cps(n3);
 
+}
+
+void orb_synth_set_topnote(orb_data *orb, int top)
+{
+    sp_synth *synth;
+   
+    synth = orb->synth;
     synth->mode->metal[0] = sp_midi2cps(top) * 2;
     synth->mode->metal[1] = sp_midi2cps(top) * 2;
     synth->mode->metal[2] = sp_midi2cps(top) * 2.5;

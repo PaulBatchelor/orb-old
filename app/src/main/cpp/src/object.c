@@ -155,3 +155,13 @@ void orb_object_set_fsm_pos(orb_data *orb, int id, uint32_t pos)
     obj = &list->obj[id];
     obj->fsm_pos = pos;
 }
+
+void orb_object_set_note(orb_data *orb, int id, int note)
+{
+    orb_object_list *list;
+    orb_object *obj;
+
+    list = &orb->list;
+    obj = &list->obj[id];
+    obj->note = note;
+}

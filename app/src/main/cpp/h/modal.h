@@ -1,5 +1,7 @@
 typedef struct {
     sp_mode *mode[4];
+    sp_port *qports[4];
+    SPFLOAT q[4];
     int type;
     SPFLOAT gate;
     SPFLOAT prev;
