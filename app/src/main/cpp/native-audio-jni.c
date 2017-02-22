@@ -426,6 +426,9 @@ JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_MainActivity_setDimensions(JNI
 {
     orb.width = width;   
     orb.height = height;   
+    /* TODO: wrong values */
+    LOGI("setdim: the width is %d and the height is %d. probably wrong values.\n", 
+        width, height);
     orb_grid_calculate(&orb);
 }
 
@@ -434,8 +437,11 @@ JNIEXPORT void JNICALL Java_com_paulbatchelor_orb_GL2JNILib_init(JNIEnv * env,
 {
     orb.width = width;
     orb.height = height;
-    LOGI("the width is %d and the height is %d\n", width, height);
     orb_grid_calculate(&orb);
+    /* TODO: Reloading the level is a not so elegant way of setting the correct
+     * coordinates for the orb avatar. The issue is that orb needs the dimensions
+     * earlier in the load process than here. for orb_init.*/
+    orb_level_load(&orb);
     setupGraphics(width, height);
 }
 

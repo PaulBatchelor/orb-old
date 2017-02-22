@@ -27,7 +27,11 @@ typedef struct sp_synth sp_synth;
 #define GRID_WIDTH 16 
 #define GRID_HEIGHT 9 
 
+#define NLEVELS 3
+
 typedef struct orb_data orb_data;
+
+typedef void (* orb_level)(orb_data *);
 
 enum {
 ORB_SQUARE = 0,
@@ -117,6 +121,9 @@ struct orb_data {
     double wait;
     double alpha;
     double fade;
+
+    orb_level level[NLEVELS];
+    int lvl;
 };
 
 
@@ -156,6 +163,9 @@ int orb_avatar_check_collision(orb_data *orb,
     int pos);
 
 void orb_avatar_set_pos(orb_data *orb, orb_avatar *av, int x, int y);
+
+void orb_avatar_center_x(orb_data *orb, orb_avatar *av);
+void orb_avatar_center_y(orb_data *orb, orb_avatar *av);
 
 /* synth */
 
@@ -227,4 +237,10 @@ void orb_collide(orb_data *orb,
 
 void orb_fsm_update(orb_data *orb);
 
+
+/* levels */
+void orb_level_init(orb_data *orb);
+void orb_level_next(orb_data *orb);
+void orb_level_load(orb_data *orb);
+void orb_level_set(orb_data *orb, int level);
 #endif

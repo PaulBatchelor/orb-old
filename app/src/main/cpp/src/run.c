@@ -17,43 +17,6 @@
 
 #include "orb.h"
 
-static void level4(orb_data *orb)
-{
-    orb_object_list_init(orb, &orb->list);
-    orb->id[0] = orb_object_add_offsquare(orb, &orb->list, 4, 2);
-    orb->id[1] = orb_object_add_square(orb, &orb->list, 10, 6);
-    orb->id[2] = orb_object_add_square(orb, &orb->list, 10, 2);
-    orb->id[3] = orb_object_add_square(orb, &orb->list, 4, 6);
-
-    fsm_init(&orb->fs, 4);
-    fsm_add_rule(&orb->fs, 1, 2);
-    fsm_add_rule(&orb->fs, 1, 3);
-    fsm_add_rule(&orb->fs, 1, 4);
-    fsm_add_rule(&orb->fs, 2, 3);
-    fsm_add_rule(&orb->fs, 2, 1);
-    fsm_add_rule(&orb->fs, 3, 4);
-    fsm_add_rule(&orb->fs, 4, 1);
-
-    fsm_assign_id(&orb->fs, 1, orb->id[0]);
-    orb_object_set_fsm_pos(orb, orb->id[0], 1);
-
-    fsm_assign_id(&orb->fs, 2, orb->id[1]);
-    orb_object_set_fsm_pos(orb, orb->id[1], 2);
-    
-    fsm_assign_id(&orb->fs, 3, orb->id[2]);
-    orb_object_set_fsm_pos(orb, orb->id[2], 3);
-    
-    fsm_assign_id(&orb->fs, 4, orb->id[3]);
-    orb_object_set_fsm_pos(orb, orb->id[3], 4);
-
-    fsm_set_state(&orb->fs, 4);
-    orb_fsm_update(orb);
-
-    orb_synth_set_notes(orb, 60, 67, 69, 74);
-
-    orb_avatar_set_pos(orb, &orb->av, 1, 1);
-}
-
 static void orb_draw_bars(NVGcontext *vg, orb_data *orb)
 {
     nvgFillColor(vg, nvgRGB(0, 0, 0));
@@ -104,7 +67,8 @@ void orb_step(NVGcontext *vg, orb_data *orb)
             break;
         case ORB_MODE_EMPTY:
             if(orb->wait <= 0) {
-                level4(orb);
+                orb_level_next(orb);
+                orb_level_load(orb);
                 orb->mode = ORB_MODE_FADE;
                 orb->alpha = 0;
                 orb->fade = 0.5;
@@ -136,7 +100,11 @@ void orb_init(orb_data *orb, int sr)
     gettimeofday(&orb->tv, NULL);
     fsm_create(&orb->fs, 5);
 
-    level4(orb);
+    orb_level_init(orb);
+
+    orb_level_set(orb, 0);
+
+    orb_level_load(orb);
 
     /* set mode to empty mode */
     orb->mode = ORB_MODE_FADE;

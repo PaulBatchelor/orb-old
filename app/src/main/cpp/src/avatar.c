@@ -233,6 +233,19 @@ int orb_avatar_find(orb_data *orb, orb_avatar *av, int *x, int *y)
 
 void orb_avatar_set_pos(orb_data *orb, orb_avatar *av, int x, int y)
 {
-    av->x_pos = orb_grid_x(orb, x);
-    av->y_pos = orb_grid_y(orb, y);
+    av->x_pos = orb_grid_x(orb, x) + 0.5 * orb_grid_size(orb);
+    av->y_pos = orb_grid_y(orb, y) + 0.5 * orb_grid_size(orb);
+    LOGI("orb y is %g\n", av->y_pos);
+    LOGI("orb bias is %d\n", orb->bias);
+    LOGI("orb radius is %g\n", av->ir);
+}
+
+void orb_avatar_center_x(orb_data *orb, orb_avatar *av)
+{
+    av->x_pos = orb->width * 0.5;
+}
+
+void orb_avatar_center_y(orb_data *orb, orb_avatar *av)
+{
+    av->y_pos = orb->height * 0.5;
 }
