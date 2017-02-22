@@ -154,7 +154,7 @@ void orb_collide(orb_data *orb,
     int pos)
 {
     if(obj->type == ORB_SQUARE) {
-        orb_motion_repel(orb, &orb->motion, 1.01);
+        orb_motion_repel(orb, &orb->motion, 0.9);
         orb_synth_set_topnote(orb, obj->note);
     } else {
         orb_motion_repel(orb, &orb->motion, .3);
