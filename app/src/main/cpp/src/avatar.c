@@ -68,13 +68,16 @@ void orb_avatar_init(orb_data *orb, orb_avatar *av)
 
 void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
 {
+    double freq;
     orb_motion_step(orb, &orb->motion, &av->x_pos, &av->y_pos);
 
     if(av->env > 0.001) {
+        freq = av->env * 13.0 * orb->dtime;
+        if(freq > 13.0) freq = 13.0;
         av->radius = av->ir + 
-            (0.5 * (1 + cos(av->phs)) * av->ir * 0.09) * av->env;
-        av->phs = fmod(av->phs + (av->env * 30.0 * orb->dtime), 2 * M_PI);
-        av->env *= pow(0.3, orb->dtime);
+            (0.5 * (1 + cos(av->phs)) * av->ir * 0.11) * av->env;
+        av->phs = fmod(av->phs + freq, 2 * M_PI);
+        av->env *= pow(0.5, orb->dtime);
     }
 
     orb_motion_bounce_edges(orb, &orb->motion, 
