@@ -231,3 +231,8 @@ int orb_avatar_find(orb_data *orb, orb_avatar *av, int *x, int *y)
     return id;
 }
 
+void orb_avatar_set_pos(orb_data *orb, orb_avatar *av, int x, int y)
+{
+    av->x_pos = orb_grid_x(orb, x);
+    av->y_pos = orb_grid_y(orb, y);
+}

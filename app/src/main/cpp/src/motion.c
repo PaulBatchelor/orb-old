@@ -92,3 +92,9 @@ void orb_motion_repel(orb_data *orb, orb_motion *m, double amt)
     m->vel_x *= -amt;
     m->vel_y *= -amt;
 }
+
+void orb_motion_stop(orb_data *orb, orb_motion *m)
+{
+    m->vel_x = 0;
+    m->vel_y = 0;
+}

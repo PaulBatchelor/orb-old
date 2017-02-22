@@ -31,7 +31,11 @@ typedef struct orb_data orb_data;
 
 enum {
 ORB_SQUARE = 0,
-ORB_OFFSQUARE
+ORB_OFFSQUARE,
+ORB_MODE_EMPTY = 0,
+ORB_MODE_PLAY,
+ORB_MODE_FADE,
+ORB_MODE_GAMEOVER
 };
 
 typedef struct {
@@ -109,6 +113,10 @@ struct orb_data {
     orb_object_list list;
     int id[6];
     fsm_data fs;
+    int mode;
+    double wait;
+    double alpha;
+    double fade;
 };
 
 
@@ -147,6 +155,8 @@ int orb_avatar_check_collision(orb_data *orb,
     orb_avatar *av,
     int pos);
 
+void orb_avatar_set_pos(orb_data *orb, orb_avatar *av, int x, int y);
+
 /* synth */
 
 void orb_synth_destroy(orb_data *orb);
@@ -181,8 +191,9 @@ void orb_motion_add_force(orb_data *orb, orb_motion *m, double vx, double vy);
 void orb_motion_set_acceleration(orb_data *orb, orb_motion *m, double acc);
 void orb_motion_bounce_edges(orb_data *orb, orb_motion *m, 
     double *x, double *y, double r);
-void orb_motion_repel(orb_data *orb, orb_motion *av, double amt);
+void orb_motion_repel(orb_data *orb, orb_motion *m, double amt);
 double orb_dtime(orb_data *orb);
+void orb_motion_stop(orb_data *orb, orb_motion *m);
 
 /* circle stack */
 
