@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include <math.h>
+#include "nanovg.h"
+#include "orb.h"
 #include "soundpipe.h"
 #include "modal.h"
 
@@ -87,8 +90,13 @@ int sp_modal_compute(sp_data *sp, sp_modal *m, SPFLOAT *in, SPFLOAT *out)
     sp_mode_compute(sp, m->mode[3], &exc, &tmp);
     col += tmp;
 
-    col *= 0.07;
-    
+    col *= 0.06;
+/*
+    if(fabs(col) > 0.5) {
+        col *= 0.001;
+        LOGI("OVERDRIVE\n");
+    }
+*/
     *out = col;
     return SP_OK;
 }
