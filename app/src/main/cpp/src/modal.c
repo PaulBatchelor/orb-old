@@ -90,7 +90,7 @@ int sp_modal_compute(sp_data *sp, sp_modal *m, SPFLOAT *in, SPFLOAT *out)
     sp_mode_compute(sp, m->mode[3], &exc, &tmp);
     col += tmp;
 
-    col *= 0.06;
+    col *= 0.1;
 /*
     if(fabs(col) > 0.5) {
         col *= 0.001;
@@ -120,5 +120,16 @@ void sp_modal_type(sp_modal *m, int type)
     for(i = 0; i < 4; i++) {
         m->mode[i]->freq = mat[2 * i];
         m->mode[i]->q = mat[(2 * i) + 1];
+    }
+}
+
+void sp_modal_reset(sp_modal *m)
+{
+    int i;
+    sp_mode *p;
+    for(i = 0; i < 4; i++) {
+        p = m->mode[i];
+        p->xnm1 = p->ynm1 = p->ynm2 = 0.0;
+        p->a0 = p->a1 = p->a2 = p->d = 0.0;
     }
 }

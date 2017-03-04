@@ -37,23 +37,19 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
 
     synth = orb->synth;
     m = synth->mode;
+
     motion = &orb->motion;
 
     amp = ((fabs(motion->vel_y) + fabs(motion->vel_x)) * 0.5) * 0.7;
-   
-    if(amp > 3.0) amp = 3.0;
-    else if(amp < 1.0) amp = 1.0;
-    
+  
     m->amp = amp;
 
-
-    LOGI("amp is %g\n", amp);
     if(obj->type == ORB_SQUARE) {
         sp_modal_type(m, 0);
         sp_modal_scale(m, amp);
     } else {
         sp_modal_type(m, 1);
-        sp_modal_scale(m, amp * 0.6);
+        sp_modal_scale(m, amp);
     }
 
     if(m->gate == 0) {
