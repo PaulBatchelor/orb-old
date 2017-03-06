@@ -26,7 +26,7 @@ void orb_object_off(NVGcontext *vg, orb_data *orb, orb_object *obj)
         grid_size - line_width); 
     nvgClosePath(vg);
     nvgStrokeWidth(vg, line_width);
-    nvgStrokeColor(vg, orb->color1);
+    nvgStrokeColor(vg, orb->color[0]);
     nvgStroke(vg);
 }
 

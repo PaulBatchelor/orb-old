@@ -105,8 +105,9 @@ struct orb_data {
     int width; 
     int height;
     sp_synth *synth;
-    NVGcolor color1;
-    NVGcolor color2;
+    NVGcolor old_color[2];
+    NVGcolor new_color[2];
+    NVGcolor color[2];
     orb_mouse mouse;
     orb_avatar av;
     int grid_size;
@@ -246,4 +247,10 @@ void orb_level_init(orb_data *orb);
 void orb_level_next(orb_data *orb);
 void orb_level_load(orb_data *orb);
 void orb_level_set(orb_data *orb, int level);
+
+/* color */
+void orb_color_set(orb_data *orb, NVGcolor color1, NVGcolor color2);
+void orb_color_old(orb_data *orb, NVGcolor color1, NVGcolor color2);
+void orb_color_new(orb_data *orb, NVGcolor color1, NVGcolor color2);
+void orb_color_lerp(orb_data *orb, double alpha);
 #endif

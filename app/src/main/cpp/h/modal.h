@@ -1,6 +1,7 @@
 typedef struct {
     sp_mode *mode[4];
     int type;
+    int ptype;
     SPFLOAT gate;
     SPFLOAT prev;
     SPFLOAT amp;
@@ -17,3 +18,5 @@ int sp_modal_compute(sp_data *sp, sp_modal *m, SPFLOAT *in, SPFLOAT *out);
 void sp_modal_scale(sp_modal *m, SPFLOAT amp);
 
 void sp_modal_type(sp_modal *m, int type);
+
+void sp_modal_reset(sp_modal *m);

@@ -22,7 +22,7 @@ void orb_avatar_poke(
     double q_y;
     double amt;
 
-    amt = 2.7;
+    amt = 2.0;
     force_x = 0;
     force_y = 0;
 
@@ -88,7 +88,7 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     nvgBeginPath(vg);
     nvgArc(vg, av->x_pos, av->y_pos, av->radius, 0, 2 * M_PI, NVG_CCW);
     nvgClosePath(vg);
-    nvgFillColor(vg, orb->color1);
+    nvgFillColor(vg, orb->color[0]);
     nvgFill(vg);
 }
 

@@ -35,6 +35,7 @@ add_library(native-audio-jni SHARED
     src/main/cpp/src/modal.c
     src/main/cpp/src/revscm.c
     src/main/cpp/src/levels.c
+    src/main/cpp/src/color.c
 )
 
 add_library( # Sets the name of the library.

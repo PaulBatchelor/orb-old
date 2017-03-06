@@ -40,15 +40,19 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
 
     motion = &orb->motion;
 
-    amp = ((fabs(motion->vel_y) + fabs(motion->vel_x)) * 0.5) * 0.7;
+    amp = ((fabs(motion->vel_y) + fabs(motion->vel_x)) * 0.5) * 0.4;
   
     m->amp = amp;
 
+
+    //sp_modal_reset(m);
     if(obj->type == ORB_SQUARE) {
+        LOGI("amp is %g\n", amp);
         sp_modal_type(m, 0);
         sp_modal_scale(m, amp);
     } else {
         sp_modal_type(m, 1);
+        amp = (amp < 0.8 ? 0.8 : amp);
         sp_modal_scale(m, amp);
     }
 
@@ -77,10 +81,10 @@ void orb_synth_set_topnote(orb_data *orb, int top)
     sp_synth *synth;
    
     synth = orb->synth;
-    synth->mode->metal[0] = sp_midi2cps(top) * 2;
-    synth->mode->metal[1] = sp_midi2cps(top) * 2;
-    synth->mode->metal[2] = sp_midi2cps(top) * 2.5;
-    synth->mode->metal[3] = sp_midi2cps(top) * 2.5;
+    synth->mode->metal[0] = sp_midi2cps(top) * 2.001;
+    //synth->mode->metal[1] = sp_midi2cps(top) * 0.5;
+    synth->mode->metal[2] = sp_midi2cps(top) * 1.998;
+    //synth->mode->metal[3] = sp_midi2cps(top) * 0.5;
     
     synth->mode->metal[4] = sp_midi2cps(top);
     synth->mode->metal[6] = sp_midi2cps(top) * 0.5;

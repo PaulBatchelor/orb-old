@@ -36,7 +36,7 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     int h = orb->height;
 
 
-    glClearColor(orb->color2.r, orb->color2.g, orb->color2.b, 1.0f);
+    glClearColor(orb->color[1].r, orb->color[1].g, orb->color[1].b, 1.0f);
 
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -49,6 +49,9 @@ void orb_step(NVGcontext *vg, orb_data *orb)
     switch(orb->mode) {
         case ORB_MODE_FADE:
             orb->alpha += orb->fade * orb->dtime;
+            if(orb->fade > 0) {
+                orb_color_lerp(orb, orb->alpha);
+            }
             if(orb->alpha >= 1.0 && orb->fade > 0) {
                 orb->mode = ORB_MODE_PLAY;
                 orb->alpha = 1.0;
@@ -58,9 +61,9 @@ void orb_step(NVGcontext *vg, orb_data *orb)
                 orb->wait = 1.0;
                 orb_motion_stop(orb, &orb->motion);
             }
-            orb->color1.a = orb->alpha;
+            orb->color[0].a = orb->alpha;
         case ORB_MODE_PLAY:
-            nvgFillColor(vg, orb->color1);
+            nvgFillColor(vg, orb->color[0]);
             orb_object_list_draw(vg, orb, &orb->list);
             orb_cstack_display(vg, orb, &orb->cstack);
             orb_avatar_step(vg, orb, &orb->av);
@@ -71,7 +74,7 @@ void orb_step(NVGcontext *vg, orb_data *orb)
                 orb_level_load(orb);
                 orb->mode = ORB_MODE_FADE;
                 orb->alpha = 0;
-                orb->fade = 0.5;
+                orb->fade = 1.8;
             } else {
                 orb->wait -= orb->dtime;
             }
@@ -93,8 +96,11 @@ void orb_init(orb_data *orb, int sr)
     orb_motion_init(orb, &orb->motion);
     orb_motion_set_acceleration(orb, &orb->motion, 0.8);
 
-    orb->color1 = nvgRGB(211, 186, 169);
-    orb->color2 = nvgRGB(39, 27, 20);
+    orb_color_old(orb, nvgRGB(211, 186, 169), nvgRGB(39, 27, 20));
+    orb_color_new(orb, nvgRGB(211, 186, 169), nvgRGB(39, 27, 20));
+
+    orb->color[0] = nvgRGB(211, 186, 169);
+    orb->color[1] = nvgRGB(39, 27, 20);
 
     orb_cstack_init(orb, &orb->cstack);
     gettimeofday(&orb->tv, NULL);
@@ -112,7 +118,7 @@ void orb_init(orb_data *orb, int sr)
     /* set wait time to 0 seconds */
     orb->wait = 1.0;
     orb->alpha = 0.0;
-    orb->fade = 0.5;
+    orb->fade = 2;
 }
 
 void orb_destroy(orb_data *orb)
