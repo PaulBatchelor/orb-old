@@ -36,7 +36,7 @@ int sp_modal_init(sp_data *sp, sp_modal *m)
     m->metal[0] = 1000;
     m->metal[1] = 40;
     m->metal[2] = 1800;
-    m->metal[3] = 20;
+    m->metal[3] = 200;
     m->metal[4] = 440;
     m->metal[5] = 60;
     m->metal[6] = 880;
@@ -107,7 +107,7 @@ void sp_modal_scale(sp_modal *m, SPFLOAT amp)
     amp = (amp > 0.7 ? 0.7 : amp);
     SPFLOAT *mat = m->mat[m->type];
     m->mode[0]->q = 2 + mat[1] * amp;
-    m->mode[1]->q = 8 + mat[3] * amp;
+    //m->mode[1]->q = 8 + mat[3] * amp;
     m->mode[2]->q = 30 + mat[5] * amp;
     m->mode[3]->q = 13 + mat[7] * amp;
 }
