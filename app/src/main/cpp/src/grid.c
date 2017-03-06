@@ -3,7 +3,7 @@
 
 void orb_grid_calculate(orb_data *orb)
 {
-    orb->grid_size = orb->width / 16;
+    orb->grid_size = orb->width / 16.0;
     orb->bias = (orb->height - (orb->grid_size * 9)) * 0.5;
     orb_resize(orb);
 }

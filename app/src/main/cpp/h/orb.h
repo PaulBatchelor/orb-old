@@ -110,8 +110,8 @@ struct orb_data {
     NVGcolor color[2];
     orb_mouse mouse;
     orb_avatar av;
-    int grid_size;
-    int bias;
+    double grid_size;
+    double bias;
     orb_motion motion;
     orb_cstack cstack;
     struct timeval tv;

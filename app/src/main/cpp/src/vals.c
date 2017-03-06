@@ -81,7 +81,7 @@ void orb_synth_set_topnote(orb_data *orb, int top)
     sp_synth *synth;
    
     synth = orb->synth;
-    synth->mode->metal[0] = sp_midi2cps(top) * 2.001;
+    synth->mode->metal[0] = sp_midi2cps(top) * 3.001;
     //synth->mode->metal[1] = sp_midi2cps(top) * 0.5;
     synth->mode->metal[2] = sp_midi2cps(top) * 1.998;
     //synth->mode->metal[3] = sp_midi2cps(top) * 0.5;
