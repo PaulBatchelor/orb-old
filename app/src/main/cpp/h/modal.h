@@ -1,5 +1,6 @@
 typedef struct {
     sp_mode *mode[4];
+    sp_dcblock *dc;
     int type;
     int ptype;
     SPFLOAT gate;

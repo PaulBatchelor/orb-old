@@ -12,6 +12,7 @@ int sp_modal_create(sp_modal **m)
     for(i = 0; i < 4; i++) {
         sp_mode_create(&(*m)->mode[i]);
     }
+    sp_dcblock_create(&(*m)->dc);
     return SP_OK;
 }
 
@@ -21,6 +22,7 @@ int sp_modal_destroy(sp_modal **m)
     for(i = 0; i < 4; i++) {
         sp_mode_destroy(&(*m)->mode[i]);
     }
+    sp_dcblock_destroy(&(*m)->dc);
     free(*m);
     return SP_OK;
 }
@@ -60,6 +62,9 @@ int sp_modal_init(sp_data *sp, sp_modal *m)
     m->gate = 0;
     m->prev = 0;
     m->amp = 0;
+
+    sp_dcblock_init(sp, m->dc);
+
     return SP_OK;
 }
 
@@ -71,7 +76,15 @@ int sp_modal_compute(sp_data *sp, sp_modal *m, SPFLOAT *in, SPFLOAT *out)
     SPFLOAT col;
 
     if(m->gate != m->prev) {
-        trig = m->amp;
+        if(m->type == 0) {
+            if(m->amp > 0.6) {
+                trig = m->amp;
+            } else {
+                trig = 0.6;
+            }
+        } else {
+            trig = m->amp;
+        }
     } else {
         trig = 0.0;
     }
@@ -92,19 +105,14 @@ int sp_modal_compute(sp_data *sp, sp_modal *m, SPFLOAT *in, SPFLOAT *out)
     col += tmp;
 
     col *= 0.5;
-/*
-    if(fabs(col) > 0.5) {
-        col *= 0.001;
-        LOGI("OVERDRIVE\n");
-    }
-*/
-    *out = tanh(col);
+
+    sp_dcblock_compute(sp, m->dc, &col, out);
     return SP_OK;
 }
 
 void sp_modal_scale(sp_modal *m, SPFLOAT amp)
 {
-    amp = (amp > 0.7 ? 0.7 : amp);
+    //amp = (amp > 0.8 ? 0.8 : amp);
     SPFLOAT *mat = m->mat[m->type];
     m->mode[0]->q = 2 + mat[1] * amp;
     m->mode[1]->q = 8 + mat[3] * amp;
