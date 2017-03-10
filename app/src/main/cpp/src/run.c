@@ -179,6 +179,7 @@ void orb_collide(orb_data *orb,
 void orb_resize(orb_data *orb)
 {
     orb->av.ir = orb_grid_size(orb) * 0.7;
+    orb->av.cr = orb_grid_size(orb) * 0.7;
     orb->av.radius = orb->av.ir;
     orb->cstack.irad = (double)orb_grid_size(orb);
 }

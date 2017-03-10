@@ -62,6 +62,7 @@ void orb_avatar_init(orb_data *orb, orb_avatar *av)
     av->y_pos = orb_grid_y(orb, 0);
     av->radius = orb_grid_size(orb) * 0.7;
     av->ir = av->radius;
+    av->cr = av->radius;
     av->phs = 0;
     av->env = 0;
 }
@@ -83,7 +84,7 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     orb_motion_bounce_edges(orb, &orb->motion, 
         &av->x_pos, 
         &av->y_pos, 
-        av->ir);
+        av->cr);
 
     nvgBeginPath(vg);
     nvgArc(vg, av->x_pos, av->y_pos, av->radius, 0, 2 * M_PI, NVG_CCW);
@@ -188,7 +189,7 @@ int orb_avatar_check_collision(orb_data *orb,
             x_b = orb_grid_x(orb, obj->x + x);
             y_b = orb_grid_y(orb, obj->y + y);
             dist = euclid(x_a, y_a, x_b, y_b);
-            if(dist < av->ir) {
+            if(dist < av->cr) {
                 d = 0.09 * grid_size;
                 tmp = sqrt(motion->vel_x * motion->vel_x + 
                         motion->vel_y * motion->vel_y);
@@ -238,9 +239,6 @@ void orb_avatar_set_pos(orb_data *orb, orb_avatar *av, int x, int y)
 {
     av->x_pos = orb_grid_x(orb, x) + 0.5 * orb_grid_size(orb);
     av->y_pos = orb_grid_y(orb, y) + 0.5 * orb_grid_size(orb);
-    LOGI("orb y is %g\n", av->y_pos);
-    LOGI("orb bias is %d\n", orb->bias);
-    LOGI("orb radius is %g\n", av->ir);
 }
 
 void orb_avatar_center_x(orb_data *orb, orb_avatar *av)

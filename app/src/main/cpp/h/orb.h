@@ -51,7 +51,10 @@ typedef struct {
     double x_pos;
     double y_pos;
     double radius;
+    /* the initial radius */
     double ir;
+    /* the collision radius */
+    double cr;
     double phs;
     double env;
 } orb_avatar;
