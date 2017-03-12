@@ -6,12 +6,12 @@ synth = {}
 synth.sine = SP:ftbl("sine", 2048)
 synth.gs = SP:gen_sine(synth.sine)
 synth.tick = VAR:new("gate", 0.0)
-synth.env = SP:tenv("env", 0.1, 0, 0.1)
+synth.env = SP:tenv("env", 0.1, 0, 0.9)
 synth.randh = SP:randh("randh", -0.03, 0.03, 1000)
-synth.noisefilt = SP:butlp("noisefilt", 500)
+synth.noisefilt = SP:butlp("noisefilt", 800)
 synth.thresh = SP:thresh("thresh", 0.5, 2)
 synth.rev = SP:revscm("rev", 0.97, 10000)
-synth.trand = SP:trand("tr", 6000, 10000)
+synth.trand = SP:trand("tr", 1000, 4000)
 synth.delay = SP:delay("delay", 0.65, 1.1)
 synth.butlp = SP:butlp("lpf", 4000)
 synth.modal = SP:modal("mode")
@@ -28,9 +28,15 @@ synth.freq1 = VAR:new("freq1", 440)
 synth.freq2 = VAR:new("freq2", 330)
 synth.freq3 = VAR:new("freq3", 880)
 
+
 synth.lfo1 = SP:osc("lfo1", synth.sine, 0.1, 1, 0)
-synth.lfo2 = SP:osc("lfo2", synth.sine, 0.14, 1, 0.2)
+--synth.lfo1 = SP:randi("lfo1", 0, 1, 1)
+--synth.lfo2 = SP:osc("lfo2", synth.sine, 0.14, 1, 0.2)
+synth.lfo2 = SP:randi("lfo2", 0, 1, 1)
 synth.lfo3 = SP:osc("lfo3", synth.sine, 0.09, 1, 0.4)
+--synth.lfo3 = SP:randi("lfo3", 0, 1, 1)
+
+synth.critter = SP:critter("critter", synth.sine)
 
 function compute_voices(tmp1, tmp2, tmp3, met, osc)
     
@@ -47,7 +53,7 @@ function compute_voices(tmp1, tmp2, tmp3, met, osc)
     synth.voice2:compute({-1, tmp1})
 
     synth.lfo2:compute({-1, tmp3})
-    SP:var_biscale(tmp3, 0, 1)
+    --SP:var_biscale(tmp3, 0, 1)
     SP:mul(tmp1, tmp1, tmp3)
 
     SP:add(osc, osc, tmp1)
@@ -61,7 +67,10 @@ function compute_voices(tmp1, tmp2, tmp3, met, osc)
     SP:mul(tmp1, tmp1, tmp3)
 
     SP:add(osc, osc, tmp1)
+    
+    SP:var_biscale(tmp3, 0.5, 1)
 
+    SP:mul(osc, osc, tmp3)
 end
 
 h = io.open("h/synth.h", "w")
@@ -90,8 +99,10 @@ function (syn)
     synth.noisefilt:compute({tmp, fm})
     synth.env:compute({tick, env})
     SP:mul(out, env, fm)
-    -- Compute delay to tmp
-    
+  
+    synth.critter:compute({tick, tmp})
+    SP:add(out, out, tmp)
+
     -- Modal collision to rev (not being used yet)
     modal = rev
     synth.modal:compute({-1, modal})
@@ -105,12 +116,12 @@ function (syn)
     del = env
     lpf = tenv 
     --- 
-    synth.delay:compute({out, del})
+    --synth.delay:compute({out, del})
     -- Filter delay to env (not being used yet)
-    synth.butlp:compute({del, lpf})
-    SP:var_scale(lpf, 0.9)
+    --synth.butlp:compute({del, lpf})
+    --SP:var_scale(del, 0.2)
     -- add filtered delay back into dry signal
-    SP:add(out, out, lpf)
+    --SP:add(out, out, del)
     SP:add(out, out, modal)
 
     -- compute 4 fm oscilators, discard for now
@@ -120,7 +131,7 @@ function (syn)
 
     --synth.rev:compute({out, out, rev, tmp})
     synth.rev:compute({out, rev})
-    SP:var_scale(rev, 0.12)
+    SP:var_scale(rev, 0.1)
     SP:add(out, out, rev)
     SP:output(out)
 end, 10)

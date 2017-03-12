@@ -186,7 +186,7 @@ end
 
 function SP:var_biscale(var, min, max)
     print8(self.c, string.format("tmp[%d] = %g+ (0.5 * (tmp[%d] + 1)) * %g;", 
-        min, var, var, (max - min)))
+        var, min, var, (max - min)))
 end
 
 
@@ -287,5 +287,11 @@ function SP:revscm(name, decay, cutoff)
     function (fp, n)
         ivar(fp, n, decay, "feedback")
         ivar(fp, n, cutoff, "lpfreq")
+    end)
+end
+
+function SP:critter(name, ft)
+    return SP:new(name, "critter", {ft:obj()}, 
+    function (fp, n)
     end)
 end
