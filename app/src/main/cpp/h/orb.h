@@ -55,8 +55,16 @@ typedef struct {
     double ir;
     /* the collision radius */
     double cr;
+
     double phs;
     double env;
+
+    /* oxygen */
+    double oxygen;
+    double deflation;
+    double inflation;
+    double recovery;
+
 } orb_avatar;
 
 typedef struct {
@@ -171,6 +179,8 @@ void orb_avatar_set_pos(orb_data *orb, orb_avatar *av, int x, int y);
 
 void orb_avatar_center_x(orb_data *orb, orb_avatar *av);
 void orb_avatar_center_y(orb_data *orb, orb_avatar *av);
+
+void orb_avatar_compute_oxygen(orb_data *orb, orb_avatar *av);
 
 /* synth */
 

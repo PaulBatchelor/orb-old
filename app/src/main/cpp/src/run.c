@@ -108,7 +108,7 @@ void orb_init(orb_data *orb, int sr)
 
     orb_level_init(orb);
 
-    orb_level_set(orb, 0);
+    orb_level_set(orb, 1);
 
     orb_level_load(orb);
 
@@ -134,6 +134,7 @@ void orb_set_vals(orb_data *orb)
 
 void orb_poke(orb_data *orb)
 {
+
     if(orb->mode == ORB_MODE_PLAY) { 
         orb_avatar *av = &orb->av;
         double mx = orb->mouse.x_pos * orb->width;
@@ -147,9 +148,7 @@ void orb_poke(orb_data *orb)
         );
 
         if(distance <= 3 * orb_grid_size(orb)) {
-            orb_cstack_add(orb, &orb->cstack, ax, ay);
             orb_avatar_poke(orb, av, &orb->motion, mx, my, ax, ay);
-            orb_synth_set_vals(orb);
         }
     }
 }

@@ -33,7 +33,7 @@ void orb_grid_bounds_detection(orb_data *orb,
         int *t, int *b, int *l, int *r)
 {
     *t = (y == 0);
-    *b = (y == GRID_WIDTH - 1);
+    *b = (y == GRID_HEIGHT - 1);
     *l = (x % GRID_WIDTH == 0);
     *r = (x == GRID_WIDTH -1);
 }

@@ -22,6 +22,14 @@ void orb_avatar_poke(
     double q_y;
     double amt;
 
+    av->deflation += 1.2;
+
+    orb_avatar_compute_oxygen(orb, av);
+
+    if(av->oxygen < 0.8) {
+        return;
+    }
+
     amt = 2.0;
     force_x = 0;
     force_y = 0;
@@ -54,6 +62,9 @@ void orb_avatar_poke(
     orb_motion_add_force(orb, m, amt * q_x * force_x, amt * q_y * force_y);
   
     av->env += 1.0;
+
+    orb_cstack_add(orb, &orb->cstack, ax, ay);
+    orb_synth_set_vals(orb);
 }
 
 void orb_avatar_init(orb_data *orb, orb_avatar *av)
@@ -65,6 +76,10 @@ void orb_avatar_init(orb_data *orb, orb_avatar *av)
     av->cr = av->radius;
     av->phs = 0;
     av->env = 0;
+    av->oxygen = 1.0;
+    av->deflation = 0.0;
+    av->inflation = 0.4;
+    av->recovery = 0.05;
 }
 
 void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
@@ -72,11 +87,16 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     double freq;
     orb_motion_step(orb, &orb->motion, &av->x_pos, &av->y_pos);
 
+    orb_avatar_compute_oxygen(orb, av);
+    //LOGI("oxygen: %g\n", av->oxygen);
+    av->cr = av->ir * av->oxygen;
+
+    av->radius = av->cr;
     if(av->env > 0.001) {
-        freq = av->env * 13.0 * orb->dtime;
-        if(freq > 13.0) freq = 13.0;
-        av->radius = av->ir + 
-            (0.5 * (1 + cos(av->phs)) * av->ir * 0.11) * av->env;
+        freq = av->env * 20.0 * orb->dtime;
+        //if(freq > 13.0) freq = 13.0;
+        av->radius = av->cr + 
+            (0.5 * (1 + cos(av->phs)) * av->cr * 0.11) * av->env;
         av->phs = fmod(av->phs + freq, 2 * M_PI);
         av->env *= pow(0.5, orb->dtime);
     }
@@ -89,8 +109,10 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     nvgBeginPath(vg);
     nvgArc(vg, av->x_pos, av->y_pos, av->radius, 0, 2 * M_PI, NVG_CCW);
     nvgClosePath(vg);
+    if(orb->mode == ORB_MODE_PLAY) orb->color[0].a = av->oxygen;
     nvgFillColor(vg, orb->color[0]);
     nvgFill(vg);
+    orb->color[0].a = orb->alpha;
 }
 
 void orb_avatar_collisions(orb_data *orb, 
@@ -109,7 +131,8 @@ void orb_avatar_collisions(orb_data *orb,
     orb_grid_bounds_detection(orb, x, y, &top, &bottom, &left, &right);
     
     if(orb_avatar_check_collision(orb, list, av, id)) {
-        /* if we are right *on* the square, trouble is to be had... */
+        LOGI("OH SHIT!\n");
+        orb_level_load(orb);
         return;
     }
 
@@ -122,6 +145,8 @@ void orb_avatar_collisions(orb_data *orb,
             orb_avatar_check_collision(orb, list, av, id - GRID_WIDTH + 1);
         }
 
+    } else {
+        //LOGI("TOP!\n");
     }
 
     if(!bottom) {
@@ -132,7 +157,11 @@ void orb_avatar_collisions(orb_data *orb,
         if(!right) {
             orb_avatar_check_collision(orb, list, av, id + GRID_WIDTH + 1);
         }
+    } else {
+        //LOGI("BOTTOM!\n");
     }
+
+
 
     if(!left) {
         orb_avatar_check_collision(orb, list, av, id - 1);
@@ -190,10 +219,15 @@ int orb_avatar_check_collision(orb_data *orb,
             y_b = orb_grid_y(orb, obj->y + y);
             dist = euclid(x_a, y_a, x_b, y_b);
             if(dist < av->cr) {
-                d = 0.09 * grid_size;
+
+                if(dist < av->cr * 0.9) {
+                    LOGI("oh shit again!\n");
+                    orb_level_load(orb);
+                }
+
+                d = av->cr * 0.01;
                 tmp = sqrt(motion->vel_x * motion->vel_x + 
                         motion->vel_y * motion->vel_y);
-
 
                 if(tmp == 0) {
                     orb_motion_repel(orb, motion, 1.0);
@@ -249,4 +283,18 @@ void orb_avatar_center_x(orb_data *orb, orb_avatar *av)
 void orb_avatar_center_y(orb_data *orb, orb_avatar *av)
 {
     av->y_pos = orb->height * 0.5;
+}
+
+void orb_avatar_compute_oxygen(orb_data *orb, orb_avatar *av)
+{
+    av->oxygen -= orb->dtime * av->deflation;
+
+    if(av->oxygen < 0.5) av->oxygen = 0.5;
+
+    av->oxygen += orb->dtime * av->inflation;
+    if(av->oxygen > 1.0) av->oxygen = 1.0;
+
+    av->deflation *= pow(av->recovery, orb->dtime);
+
+    if(av->deflation < 0) av->deflation = 0;
 }
