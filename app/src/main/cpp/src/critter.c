@@ -70,13 +70,13 @@ int sp_critter_init(sp_data *sp, sp_critter *crit, sp_ftbl *ft)
 
     sp_randi_init(sp, crit->randi1);
     crit->randi1->min = 0.4;
-    crit->randi1->max = 0.9;
+    crit->randi1->max = 0.99;
     crit->randi1->cps = 1;
 
     sp_randi_init(sp, crit->randi2);
     crit->randi2->min = 0.001;
-    crit->randi2->max = 0.7;
-    crit->randi2->cps = 10;
+    crit->randi2->max = 0.4;
+    crit->randi2->cps = 7;
 
     sp_vdelay_init(sp, crit->vdelay, 1.0);
 
