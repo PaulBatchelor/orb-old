@@ -88,8 +88,9 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     orb_motion_step(orb, &orb->motion, &av->x_pos, &av->y_pos);
 
     orb_avatar_compute_oxygen(orb, av);
-    //LOGI("oxygen: %g\n", av->oxygen);
     av->cr = av->ir * av->oxygen;
+
+    //if(av->cr < orb_grid_size(orb)) av->cr = orb_grid_size(orb);
 
     av->radius = av->cr;
     if(av->env > 0.001) {
@@ -218,19 +219,19 @@ int orb_avatar_check_collision(orb_data *orb,
             x_b = orb_grid_x(orb, obj->x + x);
             y_b = orb_grid_y(orb, obj->y + y);
             dist = euclid(x_a, y_a, x_b, y_b);
-            if(dist < av->cr) {
+            if(dist < av->ir) {
 
-                if(dist < av->cr * 0.9) {
+                LOGI("collision!\n");
+                if(dist < av->cr * 0.7) {
                     LOGI("oh shit again!\n");
-                    orb_level_load(orb);
                 }
 
-                d = av->cr * 0.01;
+                d = av->ir * 0.01;
                 tmp = sqrt(motion->vel_x * motion->vel_x + 
                         motion->vel_y * motion->vel_y);
 
                 if(tmp == 0) {
-                    orb_motion_repel(orb, motion, 1.0);
+                    LOGI("REPEL!\n");
                 } else {
                     m = sqrt(2.0 * (d*d)) / tmp;
                     av->x_pos += -m * motion->vel_x;
@@ -238,7 +239,7 @@ int orb_avatar_check_collision(orb_data *orb,
                 }
 
                 collision = 1;
-                break;
+                //break;
             }
         }
     }

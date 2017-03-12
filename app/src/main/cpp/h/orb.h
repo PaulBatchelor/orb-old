@@ -65,6 +65,7 @@ typedef struct {
     double inflation;
     double recovery;
 
+    int current_square;
 } orb_avatar;
 
 typedef struct {
