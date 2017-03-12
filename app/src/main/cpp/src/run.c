@@ -108,7 +108,7 @@ void orb_init(orb_data *orb, int sr)
 
     orb_level_init(orb);
 
-    orb_level_set(orb, 1);
+    orb_level_set(orb, 0);
 
     orb_level_load(orb);
 

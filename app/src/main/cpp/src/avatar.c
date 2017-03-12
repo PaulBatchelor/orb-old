@@ -22,7 +22,7 @@ void orb_avatar_poke(
     double q_y;
     double amt;
 
-    av->deflation += 1.2;
+    av->deflation += 1.5;
 
     orb_avatar_compute_oxygen(orb, av);
 
@@ -79,7 +79,7 @@ void orb_avatar_init(orb_data *orb, orb_avatar *av)
     av->oxygen = 1.0;
     av->deflation = 0.0;
     av->inflation = 0.4;
-    av->recovery = 0.05;
+    av->recovery = 0.01;
 }
 
 void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
@@ -88,13 +88,13 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     orb_motion_step(orb, &orb->motion, &av->x_pos, &av->y_pos);
 
     orb_avatar_compute_oxygen(orb, av);
-    av->cr = av->ir * av->oxygen;
+    av->cr = (0.4 * av->ir)  + (0.6 * av->ir * av->oxygen);
 
     //if(av->cr < orb_grid_size(orb)) av->cr = orb_grid_size(orb);
 
     av->radius = av->cr;
     if(av->env > 0.001) {
-        freq = av->env * 20.0 * orb->dtime;
+        freq = av->env * 25.0 * orb->dtime;
         //if(freq > 13.0) freq = 13.0;
         av->radius = av->cr + 
             (0.5 * (1 + cos(av->phs)) * av->cr * 0.11) * av->env;
@@ -110,7 +110,9 @@ void orb_avatar_step(NVGcontext *vg, orb_data *orb, orb_avatar *av)
     nvgBeginPath(vg);
     nvgArc(vg, av->x_pos, av->y_pos, av->radius, 0, 2 * M_PI, NVG_CCW);
     nvgClosePath(vg);
-    if(orb->mode == ORB_MODE_PLAY) orb->color[0].a = av->oxygen;
+    if(orb->mode == ORB_MODE_PLAY) { 
+        orb->color[0].a = 0.1 + 0.99 * av->oxygen;
+    }
     nvgFillColor(vg, orb->color[0]);
     nvgFill(vg);
     orb->color[0].a = orb->alpha;
@@ -219,14 +221,15 @@ int orb_avatar_check_collision(orb_data *orb,
             x_b = orb_grid_x(orb, obj->x + x);
             y_b = orb_grid_y(orb, obj->y + y);
             dist = euclid(x_a, y_a, x_b, y_b);
-            if(dist < av->ir) {
+            if(dist < av->cr) {
 
                 LOGI("collision!\n");
                 if(dist < av->cr * 0.7) {
                     LOGI("oh shit again!\n");
                 }
 
-                d = av->ir * 0.01;
+                //d = av->ir * 0.01;
+                d = grid_size * 0.04;;
                 tmp = sqrt(motion->vel_x * motion->vel_x + 
                         motion->vel_y * motion->vel_y);
 
@@ -239,7 +242,7 @@ int orb_avatar_check_collision(orb_data *orb,
                 }
 
                 collision = 1;
-                //break;
+                break;
             }
         }
     }
