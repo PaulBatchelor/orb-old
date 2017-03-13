@@ -25,6 +25,7 @@ typedef struct {
     jack_client_t **client;
     const char **ports;
     orb_data *orb;
+    int run;
 } jack_data;
 
 static jack_data jd;
@@ -40,6 +41,7 @@ static int jack_cb(jack_nframes_t nframes, void *arg)
     jack_data *jack = arg;
     orb_data *orb = jack->orb;
 
+    if(jack->run == 0) return 0;
     jack_default_audio_sample_t  *out[2];
 
     for(chan = 0; chan < 2; chan++)
@@ -72,6 +74,7 @@ void orb_start_jack(orb_data *orb, int sr)
    
     jd.client[0] = jack_client_open (client_name, options, 
         &status, server_name);
+    jd.run = 0;
 
     if (jd.client[0] == NULL) {
         fprintf (stderr, "jack_client_open() failed, "
@@ -127,10 +130,12 @@ void orb_start_jack(orb_data *orb, int sr)
         }
     }
 
+    jd.run = 1;
 }
 
 void orb_stop_jack(orb_data *orb)
 {
+    jd.run = 0;
     free (jd.ports);
     jack_client_close(jd.client[0]);
     free(jd.output_port);
