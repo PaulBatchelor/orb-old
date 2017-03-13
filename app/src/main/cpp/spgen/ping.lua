@@ -10,7 +10,7 @@ synth.env = SP:tenv("env", 0.1, 0, 0.9)
 synth.randh = SP:randh("randh", -0.03, 0.03, 1000)
 synth.noisefilt = SP:butlp("noisefilt", 800)
 synth.thresh = SP:thresh("thresh", 0.5, 2)
-synth.rev = SP:revscm("rev", 0.97, 10000)
+synth.rev = SP:revscm("rev", 0.97, 8000)
 synth.trand = SP:trand("tr", 1000, 4000)
 synth.delay = SP:delay("delay", 0.65, 1.1)
 synth.butlp = SP:butlp("lpf", 4000)
@@ -32,7 +32,7 @@ synth.freq3 = VAR:new("freq3", 880)
 --synth.lfo1 = SP:osc("lfo1", synth.sine, 0.1, 1, 0)
 synth.lfo1 = SP:rspline("lfo1", 0, 1, 0.1, 1)
 --synth.lfo2 = SP:osc("lfo2", synth.sine, 0.14, 1, 0.2)
-synth.lfo2 = SP:rspline("lfo2", 0, 1, 3, 12)
+synth.lfo2 = SP:rspline("lfo2", 0, 1, 3, 10)
 --synth.lfo3 = SP:osc("lfo3", synth.sine, 0.09, 1, 0.4)
 synth.lfo3 = SP:rspline("lfo3", 0, 1, 0.5, 3)
 
@@ -52,7 +52,7 @@ function compute_voices(tmp1, tmp2, tmp3, met, osc)
     synth.voice2:set("freq", tmp3)
     synth.lfo2:compute({-1, tmp3})
     SP:var_copy(met, tmp3)
-    SP:var_biscale(met, 0.1, 1.4)
+    SP:var_biscale(met, 0.1, 3)
     synth.voice2:set("indx", met)
 
     synth.voice2:compute({-1, tmp1})
@@ -72,7 +72,7 @@ function compute_voices(tmp1, tmp2, tmp3, met, osc)
     
     --SP:var_biscale(tmp3, 0.5, 1)
 
-    SP:var_scale(osc, 0.8)
+    SP:var_scale(osc, 0.3)
     --SP:mul(osc, osc, tmp3)
 end
 
@@ -93,6 +93,7 @@ function (syn)
     rev = 4
     out = 5
     tenv = 6
+    rev_send = 7
 
     -- use out since it's not being used yet
     synth.thresh:compute({synth.tick, tick})
@@ -102,9 +103,16 @@ function (syn)
     synth.noisefilt:compute({tmp, fm})
     synth.env:compute({tick, env})
     SP:mul(out, env, fm)
-  
+ 
+    SP:var_copy(rev_send, out)
+    SP:var_scale(rev_send, 0.6)
     synth.critter:compute({tick, tmp})
     SP:add(out, out, tmp)
+
+    -- copy critter to rev_send
+    SP:var_copy(env, out)
+    SP:var_scale(env, 0.1)
+    SP:add(rev_send, rev_send, env)
 
     -- Modal collision to rev (not being used yet)
     modal = rev
@@ -113,11 +121,14 @@ function (syn)
 
     SP:var_copy(tmp, modal)
     SP:var_scale(tmp, 0.3)
-    -- add collision back into dry (to be delayed) signal
+    
     SP:add(out, out, tmp)
 
-    del = env
-    lpf = tenv 
+    SP:var_copy(env, tmp)
+    SP:var_scale(env, 0.9)
+    SP:add(rev_send, rev_send, env)
+    --del = env
+    --lpf = tenv 
     --- 
     --synth.delay:compute({out, del})
     -- Filter delay to env (not being used yet)
@@ -130,11 +141,17 @@ function (syn)
     -- compute 4 fm oscilators, discard for now
     -- rev tick env not used, so use those 
     compute_voices(tick, fm, env, tenv, rev)
+
+    -- save copy of rev (output signal) to tick to copy to rev_send
+    SP:var_copy(tick, rev)
+    SP:var_scale(tick, 0.9)
+    SP:add(rev_send, rev_send, tick)
+
     SP:add(out, out, rev)
 
     --synth.rev:compute({out, out, rev, tmp})
-    synth.rev:compute({out, rev})
-    SP:var_scale(rev, 0.1)
+    synth.rev:compute({rev_send, rev})
+    SP:var_scale(rev, 0.4)
     SP:add(out, out, rev)
     SP:output(out)
 end, 10)
