@@ -295,3 +295,13 @@ function SP:critter(name, ft)
     function (fp, n)
     end)
 end
+
+function SP:rspline(name, min, max, min_cps, max_cps)
+    return SP:new(name, "rspline", {}, 
+    function (fp, n)
+        ivar(fp, n, min, "min")
+        ivar(fp, n, max, "max")
+        ivar(fp, n, min_cps, "cps_min")
+        ivar(fp, n, max_cps, "cps_max")
+    end)
+end

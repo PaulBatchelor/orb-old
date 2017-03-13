@@ -116,7 +116,8 @@ vocoder \
 waveset \
 wpkorg35 \
 zitarev \
-spa
+spa \
+rspline
 
 ifndef NO_LIBSNDFILE
 	MODULES += diskin

@@ -149,6 +149,7 @@ add_library(
     soundpipe/modules/revsc.c
     soundpipe/modules/rms.c
     soundpipe/modules/rpt.c
+    soundpipe/modules/rspline.c
     soundpipe/modules/samphold.c
     soundpipe/modules/saturator.c
     soundpipe/modules/scale.c

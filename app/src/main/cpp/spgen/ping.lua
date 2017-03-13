@@ -29,12 +29,12 @@ synth.freq2 = VAR:new("freq2", 330)
 synth.freq3 = VAR:new("freq3", 880)
 
 
-synth.lfo1 = SP:osc("lfo1", synth.sine, 0.1, 1, 0)
---synth.lfo1 = SP:randi("lfo1", 0, 1, 1)
+--synth.lfo1 = SP:osc("lfo1", synth.sine, 0.1, 1, 0)
+synth.lfo1 = SP:rspline("lfo1", 0, 1, 0.01, 1)
 --synth.lfo2 = SP:osc("lfo2", synth.sine, 0.14, 1, 0.2)
-synth.lfo2 = SP:randi("lfo2", 0, 1, 1)
-synth.lfo3 = SP:osc("lfo3", synth.sine, 0.09, 1, 0.4)
---synth.lfo3 = SP:randi("lfo3", 0, 1, 1)
+synth.lfo2 = SP:rspline("lfo2", 0, 1, 0.01, 12)
+--synth.lfo3 = SP:osc("lfo3", synth.sine, 0.09, 1, 0.4)
+synth.lfo3 = SP:rspline("lfo3", 0, 1, 0.01, 1)
 
 synth.critter = SP:critter("critter", synth.sine)
 
