@@ -16,9 +16,9 @@ synth.delay = SP:delay("delay", 0.65, 1.1)
 synth.butlp = SP:butlp("lpf", 4000)
 synth.modal = SP:modal("mode")
 
-synth.voice1 = SP:fosc("voice1", synth.sine, 440, 0.07, 1, 1, 0.8)
-synth.voice2 = SP:fosc("voice2", synth.sine, 440, 0.07, 1, 1, 1.1)
-synth.voice3 = SP:fosc("voice3", synth.sine, 440, 0.07, 1, 1, 0.8)
+synth.voice1 = SP:fosc("voice1", synth.sine, 440, 0.03, 1, 1, 0.8)
+synth.voice2 = SP:fosc("voice2", synth.sine, 440, 0.03, 1, 1.001, 0.7)
+synth.voice3 = SP:fosc("voice3", synth.sine, 440, 0.03, 1, 0.999, 0.8)
 
 synth.port1 = SP:port("port1", 0.06)
 synth.port2 = SP:port("port2", 0.08)
@@ -30,11 +30,11 @@ synth.freq3 = VAR:new("freq3", 880)
 
 
 --synth.lfo1 = SP:osc("lfo1", synth.sine, 0.1, 1, 0)
-synth.lfo1 = SP:rspline("lfo1", 0, 1, 0.01, 1)
+synth.lfo1 = SP:rspline("lfo1", 0, 1, 0.1, 1)
 --synth.lfo2 = SP:osc("lfo2", synth.sine, 0.14, 1, 0.2)
-synth.lfo2 = SP:rspline("lfo2", 0, 1, 0.01, 12)
+synth.lfo2 = SP:rspline("lfo2", 0, 1, 3, 12)
 --synth.lfo3 = SP:osc("lfo3", synth.sine, 0.09, 1, 0.4)
-synth.lfo3 = SP:rspline("lfo3", 0, 1, 0.01, 1)
+synth.lfo3 = SP:rspline("lfo3", 0, 1, 0.5, 3)
 
 synth.critter = SP:critter("critter", synth.sine)
 
@@ -50,10 +50,12 @@ function compute_voices(tmp1, tmp2, tmp3, met, osc)
     
     synth.port2:compute({synth.freq2, tmp3})
     synth.voice2:set("freq", tmp3)
-    synth.voice2:compute({-1, tmp1})
-
     synth.lfo2:compute({-1, tmp3})
-    --SP:var_biscale(tmp3, 0, 1)
+    SP:var_copy(met, tmp3)
+    SP:var_biscale(met, 0.1, 1.4)
+    synth.voice2:set("indx", met)
+
+    synth.voice2:compute({-1, tmp1})
     SP:mul(tmp1, tmp1, tmp3)
 
     SP:add(osc, osc, tmp1)
@@ -68,9 +70,10 @@ function compute_voices(tmp1, tmp2, tmp3, met, osc)
 
     SP:add(osc, osc, tmp1)
     
-    SP:var_biscale(tmp3, 0.5, 1)
+    --SP:var_biscale(tmp3, 0.5, 1)
 
-    SP:mul(osc, osc, tmp3)
+    SP:var_scale(osc, 0.8)
+    --SP:mul(osc, osc, tmp3)
 end
 
 h = io.open("h/synth.h", "w")
