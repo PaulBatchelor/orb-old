@@ -60,6 +60,8 @@ add_library(
     soundpipe/lib/inih/ini.h
     soundpipe/lib/inih/ini.c
     soundpipe/lib/fft/fft.c
+    soundpipe/lib/spa/spa.c
+    soundpipe/lib/spa/spa.h
     soundpipe/h/soundpipe.h
     soundpipe/modules/adsr.c
     soundpipe/modules/allpass.c

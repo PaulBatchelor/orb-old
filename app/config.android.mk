@@ -115,7 +115,8 @@ vdelay \
 vocoder \
 waveset \
 wpkorg35 \
-zitarev
+zitarev \
+spa
 
 ifndef NO_LIBSNDFILE
 	MODULES += diskin
@@ -151,7 +152,6 @@ MODULES += padsynth
 
 # Soundpipe audio 
 include lib/spa/Makefile
-CFLAGS += -DUSE_SPA
 
 CFLAGS += -fPIC -g
 
