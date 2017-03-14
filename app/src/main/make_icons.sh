@@ -7,6 +7,7 @@ make_icon 72 res/mipmap-hdpi
 make_icon 48 res/mipmap-mdpi
 make_icon 96 res/mipmap-xhdpi
 make_icon 144 res/mipmap-xxhdpi
+make_icon 192 res/mipmap-xxxhdpi
 	
 # inkscape -z -e icon_hires.png -w 512 -h 512 icon.svg
 
