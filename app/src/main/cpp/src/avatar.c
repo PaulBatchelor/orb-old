@@ -213,36 +213,68 @@ int orb_avatar_check_collision(orb_data *orb,
     x_a = av->x_pos;
     y_a = av->y_pos;
 
-    /* block coordinates */
-
     grid_size = orb_grid_size(orb);
-    for(y = 0; y < 2; y++) {
-        for(x = 0; x < 2; x++) {
-            x_b = orb_grid_x(orb, obj->x + x);
-            y_b = orb_grid_y(orb, obj->y + y);
-            dist = euclid(x_a, y_a, x_b, y_b);
-            if(dist < av->cr) {
 
-                LOGI("collision!\n");
-                if(dist < av->cr * 0.7) {
-                    LOGI("oh shit again!\n");
+
+    x_b = orb_grid_x(orb, obj->x);
+    y_b = orb_grid_y(orb, obj->y);
+
+    x_b += grid_size * 0.5;
+    y_b += grid_size * 0.5;
+
+    dist = euclid(x_a, y_a, x_b, y_b);
+
+    if(dist < av->cr + grid_size * 0.5) {
+
+        LOGI("collision! on side\n");
+        if(dist < av->cr * 0.7) {
+            LOGI("oh shit again!\n");
+        }
+
+        d = grid_size * 0.04;;
+        tmp = sqrt(motion->vel_x * motion->vel_x + 
+                motion->vel_y * motion->vel_y);
+
+        if(tmp == 0) {
+            LOGI("REPEL!\n");
+        } else {
+            m = sqrt(2.0 * (d*d)) / tmp;
+            av->x_pos += -m * motion->vel_x;
+            av->y_pos += -m * motion->vel_y;
+        }
+
+        collision = 1;
+    }
+
+    if(!collision) {
+        for(y = 0; y < 2; y++) {
+            for(x = 0; x < 2; x++) {
+                x_b = orb_grid_x(orb, obj->x + x);
+                y_b = orb_grid_y(orb, obj->y + y);
+                dist = euclid(x_a, y_a, x_b, y_b);
+                if(dist < av->cr) {
+
+                    LOGI("collision!\n");
+                    if(dist < av->cr * 0.7) {
+                        LOGI("oh shit again!\n");
+                    }
+
+                    //d = av->ir * 0.01;
+                    d = grid_size * 0.04;;
+                    tmp = sqrt(motion->vel_x * motion->vel_x + 
+                            motion->vel_y * motion->vel_y);
+
+                    if(tmp == 0) {
+                        LOGI("REPEL!\n");
+                    } else {
+                        m = sqrt(2.0 * (d*d)) / tmp;
+                        av->x_pos += -m * motion->vel_x;
+                        av->y_pos += -m * motion->vel_y;
+                    }
+
+                    collision = 1;
+                    break;
                 }
-
-                //d = av->ir * 0.01;
-                d = grid_size * 0.04;;
-                tmp = sqrt(motion->vel_x * motion->vel_x + 
-                        motion->vel_y * motion->vel_y);
-
-                if(tmp == 0) {
-                    LOGI("REPEL!\n");
-                } else {
-                    m = sqrt(2.0 * (d*d)) / tmp;
-                    av->x_pos += -m * motion->vel_x;
-                    av->y_pos += -m * motion->vel_y;
-                }
-
-                collision = 1;
-                break;
             }
         }
     }
