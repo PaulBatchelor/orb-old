@@ -12,7 +12,7 @@ synth.noisefilt = SP:butlp("noisefilt", 800)
 synth.thresh = SP:thresh("thresh", 0.5, 2)
 synth.rev = SP:revscm("rev", 0.97, 8000)
 synth.trand = SP:trand("tr", 1000, 4000)
-synth.delay = SP:delay("delay", 0.9, 1.1)
+synth.delay = SP:delay("delay", 0.9, 2.0)
 synth.butlp = SP:butlp("lpf", 4000)
 synth.modal = SP:modal("mode")
 
@@ -128,12 +128,11 @@ function (syn)
     synth.delay:compute({tmp, del})
     -- Filter delay to env (not being used yet)
     --synth.butlp:compute({del, lpf})
-    SP:var_scale(del, 0.8)
+    SP:add(rev_send, rev_send, del)
+    SP:var_scale(del, 0.5)
     -- add filtered delay back into dry signal
     SP:add(out, out, del)
 
-    SP:var_scale(del, 0.7)
-    SP:add(rev_send, rev_send, del)
     
     SP:add(out, out, tmp)
 
