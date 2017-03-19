@@ -34,3 +34,8 @@ void orb_color_lerp(orb_data *orb, double alpha)
     clr[0].b = nclr[0].b * alpha + oclr[0].b * (1 - alpha);
     clr[1].b = nclr[1].b * alpha + oclr[1].b * (1 - alpha);
 }
+
+void orb_color_blood(orb_data *orb)
+{
+    orb->color[0] = nvgRGB(251, 0, 0);
+}

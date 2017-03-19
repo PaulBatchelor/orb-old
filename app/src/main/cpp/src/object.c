@@ -30,6 +30,45 @@ void orb_object_off(NVGcontext *vg, orb_data *orb, orb_object *obj)
     nvgStroke(vg);
 }
 
+void orb_object_avoid(NVGcontext *vg, orb_data *orb, orb_object *obj)
+{
+    double grid_size;
+    double line_width;
+    double line_width2;
+
+    grid_size = orb_grid_size(orb);
+    line_width = grid_size * 0.08;
+    line_width2 = line_width * 0.5;
+    nvgBeginPath(vg);
+    nvgRect(vg, 
+        orb_grid_x(orb, obj->x) + line_width2, 
+        orb_grid_y(orb, obj->y) + line_width2, 
+        grid_size - line_width, 
+        grid_size - line_width); 
+    nvgClosePath(vg);
+    nvgStrokeWidth(vg, line_width);
+    nvgStrokeColor(vg, orb->color[0]);
+    nvgStroke(vg);
+
+    nvgBeginPath(vg);
+    nvgMoveTo(vg, 
+        orb_grid_x(orb, obj->x) + line_width2, 
+        orb_grid_y(orb, obj->y) + line_width2);
+    nvgLineTo(vg, 
+        orb_grid_x(orb, obj->x) + grid_size - line_width2, 
+        orb_grid_y(orb, obj->y) + grid_size - line_width2);
+    nvgStroke(vg);
+    
+    nvgBeginPath(vg);
+    nvgMoveTo(vg, 
+        orb_grid_x(orb, obj->x) + grid_size - line_width2, 
+        orb_grid_y(orb, obj->y) + line_width2);
+    nvgLineTo(vg, 
+        orb_grid_x(orb, obj->x) + line_width2, 
+        orb_grid_y(orb, obj->y) + grid_size - line_width2);
+    nvgStroke(vg);
+}
+
 void orb_object_draw(NVGcontext *vg, orb_data *orb, orb_object *obj)
 {
     nvgBeginPath(vg);
@@ -50,6 +89,7 @@ void orb_object_list_init(orb_data *orb, orb_object_list *list)
     list->nextfree = 0;
     list->draw[ORB_SQUARE] = orb_object_draw;
     list->draw[ORB_OFFSQUARE] = orb_object_off;
+    list->draw[ORB_AVOIDSQUARE] = orb_object_avoid;
     for(i = 0; i < GRID_SIZE; i++) list->map[i] = -1;
 }
 
@@ -117,6 +157,21 @@ int orb_object_add_offsquare(orb_data *orb, orb_object_list *list, int x, int y)
     return id;
 }
 
+int orb_object_add_avoidsquare(orb_data *orb, orb_object_list *list, int x, int y)
+{
+    orb_object *obj;
+    int id;
+
+    id = orb_object_new(orb, list, &obj);
+    if(id < 0) return -1;
+
+    orb_object_set(orb, obj, x, y, ORB_AVOIDSQUARE);
+    obj->id = id;
+    orb_object_list_map(orb, list, obj);
+
+    return id;
+}
+
 void orb_object_list_map(orb_data *orb, orb_object_list *list, orb_object *obj)
 {
     int pos;
@@ -165,3 +220,4 @@ void orb_object_set_note(orb_data *orb, int id, int note)
     obj = &list->obj[id];
     obj->note = note;
 }
+

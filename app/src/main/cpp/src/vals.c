@@ -48,16 +48,24 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
     m->amp = amp;
     //sp_modal_reset(m);
     LOGI("amp is %g\n", amp);
-    if(obj->type == ORB_SQUARE) {
-        sp_modal_type(m, 0);
-        sp_modal_scale(m, amp);
-    } else {
-        if(amp < 0.2) {
-            amp = 0.2;
-            m->amp = 0.2;
-        }
-        sp_modal_type(m, 1);
-        sp_modal_scale(m, amp);
+
+    switch(obj->type) {
+        case ORB_SQUARE:
+            sp_modal_type(m, 0);
+            sp_modal_scale(m, amp);
+            break;
+        case ORB_OFFSQUARE:
+            if(amp < 0.2) {
+                amp = 0.2;
+                m->amp = 0.2;
+            }
+            sp_modal_type(m, 1);
+            sp_modal_scale(m, amp);
+            break;
+        case ORB_AVOIDSQUARE:
+            sp_modal_type(m, 2);
+            sp_modal_scale(m, amp);
+            break;
     }
 
     if(m->gate == 0) {

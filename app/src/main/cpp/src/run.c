@@ -70,7 +70,6 @@ void orb_step(NVGcontext *vg, orb_data *orb)
             break;
         case ORB_MODE_EMPTY:
             if(orb->wait <= 0) {
-                orb_level_next(orb);
                 orb_level_load(orb);
                 orb->mode = ORB_MODE_FADE;
                 orb->alpha = 0;
@@ -158,18 +157,31 @@ void orb_collide(orb_data *orb,
     orb_object *obj,
     int pos)
 {
-    if(obj->type == ORB_SQUARE) {
-        orb_motion_repel(orb, &orb->motion, 1.001);
-        orb_synth_set_topnote(orb, obj->note);
-    } else {
-        orb_motion_repel(orb, &orb->motion, 0.7);
+
+    switch(obj->type) {
+        case ORB_SQUARE:
+            orb_motion_repel(orb, &orb->motion, 1.001);
+            orb_synth_set_topnote(orb, obj->note);
+            fsm_compute_state(&orb->fs, obj->fsm_pos);
+            break;
+        case ORB_OFFSQUARE:
+            orb_motion_repel(orb, &orb->motion, 0.7);
+            fsm_compute_state(&orb->fs, obj->fsm_pos);
+            break;
+        case ORB_AVOIDSQUARE:
+            orb_color_blood(orb);
+            orb_motion_repel(orb, &orb->motion, 1.3);
+            orb_synth_collide(orb, obj);
+            orb->mode = ORB_MODE_FADE;
+            orb->fade = -0.5;
+            return;
     }
 
     orb_synth_collide(orb, obj);
-    fsm_compute_state(&orb->fs, obj->fsm_pos);
     orb_fsm_update(orb);
 
     if(fsm_get_state(&orb->fs) == 0) {
+        orb_level_next(orb);
         orb->mode = ORB_MODE_FADE;
         orb->fade = -0.5;
     }

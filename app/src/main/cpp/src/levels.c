@@ -183,6 +183,34 @@ static void level4(orb_data *orb)
             nvgRGB(100, 135, 141)); 
 }
 
+static void level5(orb_data *orb)
+{
+    orb_object_list_init(orb, &orb->list);
+    orb->id[0] = orb_object_add_avoidsquare(orb, &orb->list, 10, 4);
+    orb->id[2] = orb_object_add_avoidsquare(orb, &orb->list, 10, 5);
+    orb->id[3] = orb_object_add_avoidsquare(orb, &orb->list, 10, 6);
+    orb->id[4] = orb_object_add_avoidsquare(orb, &orb->list, 10, 7);
+    orb->id[5] = orb_object_add_avoidsquare(orb, &orb->list, 10, 8);
+    orb->id[6] = orb_object_add_avoidsquare(orb, &orb->list, 10, 3);
+    orb->id[7] = orb_object_add_avoidsquare(orb, &orb->list, 10, 2);
+    
+    orb->id[1] = orb_object_add_square(orb, &orb->list, 13, 4);
+
+    fsm_init(&orb->fs, 0);
+
+    fsm_assign_id(&orb->fs, 1, orb->id[1]);
+    orb_object_set_fsm_pos(orb, orb->id[1], 1);
+
+    fsm_set_state(&orb->fs, 1);
+    orb_fsm_update(orb);
+
+    orb_synth_set_notes(orb, 63, 64, 70);
+    orb_object_set_note(orb, orb->id[1], 76);
+
+    orb_avatar_set_pos(orb, &orb->av, 3, 4);
+    orb_color_set(orb, nvgRGB(195, 255, 104), nvgRGB(85, 98, 112));
+}
+
 void orb_level_init(orb_data *orb)
 {
     orb->lvl = 0;
@@ -191,6 +219,7 @@ void orb_level_init(orb_data *orb)
     orb->level[2] = level2;
     orb->level[3] = level3;
     orb->level[4] = level4;
+    orb->level[5] = level5;
 }
 
 void orb_level_next(orb_data *orb)

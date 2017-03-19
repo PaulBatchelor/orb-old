@@ -27,7 +27,7 @@ typedef struct sp_synth sp_synth;
 #define GRID_WIDTH 16 
 #define GRID_HEIGHT 9 
 
-#define NLEVELS 5
+#define NLEVELS 6
 
 typedef struct orb_data orb_data;
 
@@ -36,6 +36,7 @@ typedef void (* orb_level)(orb_data *);
 enum {
 ORB_SQUARE = 0,
 ORB_OFFSQUARE,
+ORB_AVOIDSQUARE,
 ORB_MODE_EMPTY = 0,
 ORB_MODE_PLAY,
 ORB_MODE_FADE,
@@ -129,7 +130,7 @@ struct orb_data {
     struct timeval tv;
     double dtime;
     orb_object_list list;
-    int id[6];
+    int id[12];
     fsm_data fs;
     int mode;
     double wait;
@@ -241,6 +242,7 @@ void orb_object_list_draw(NVGcontext *vg, orb_data *orb, orb_object_list *list);
 
 int orb_object_new(orb_data *orb, orb_object_list *list, orb_object **obj);
 int orb_object_add_square(orb_data *orb, orb_object_list *list, int x, int y);
+int orb_object_add_avoidsquare(orb_data *orb, orb_object_list *list, int x, int y);
 void orb_object_list_map(orb_data *orb, orb_object_list *list, orb_object *obj);
 int orb_object_list_get(orb_data *orb, orb_object_list *list, 
     orb_object **obj, int pos);
@@ -267,4 +269,5 @@ void orb_color_set(orb_data *orb, NVGcolor color1, NVGcolor color2);
 void orb_color_old(orb_data *orb, NVGcolor color1, NVGcolor color2);
 void orb_color_new(orb_data *orb, NVGcolor color1, NVGcolor color2);
 void orb_color_lerp(orb_data *orb, double alpha);
+void orb_color_blood(orb_data *orb);
 #endif

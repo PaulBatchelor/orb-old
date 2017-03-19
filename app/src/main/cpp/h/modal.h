@@ -8,7 +8,8 @@ typedef struct {
     SPFLOAT amp;
     SPFLOAT metal[8];
     SPFLOAT plastic[8];
-    SPFLOAT *mat[2];
+    SPFLOAT avoid[8];
+    SPFLOAT *mat[3];
 } sp_modal;
 
 int sp_modal_create(sp_modal **m);

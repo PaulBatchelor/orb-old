@@ -34,6 +34,7 @@ int sp_modal_init(sp_data *sp, sp_modal *m)
     m->ptype = 1;
     m->mat[0] = m->metal;
     m->mat[1] = m->plastic;
+    m->mat[2] = m->avoid;
 
     m->metal[0] = 1000;
     m->metal[1] = 400;
@@ -52,6 +53,15 @@ int sp_modal_init(sp_data *sp, sp_modal *m)
     m->plastic[5] = 60;
     m->plastic[6] = 630;
     m->plastic[7] = 30;
+    
+    m->avoid[0] = 800;
+    m->avoid[1] = 40;
+    m->avoid[2] = 1800;
+    m->avoid[3] = 1400;
+    m->avoid[4] = 300;
+    m->avoid[5] = 100;
+    m->avoid[6] = 880;
+    m->avoid[7] = 100;
     
 
     for(i = 0; i < 4; i++) {
