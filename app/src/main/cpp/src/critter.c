@@ -48,18 +48,18 @@ int sp_critter_init(sp_data *sp, sp_critter *crit, sp_ftbl *ft)
     
     sp_tenvx_init(sp, crit->tenvx);
     crit->tenvx->atk = 0.001;
-    crit->tenvx->hold = 0.001;
-    crit->tenvx->rel = 0.001;
+    crit->tenvx->hold = 0.005;
+    crit->tenvx->rel = 0.002;
 
     sp_trand_init(sp, crit->trand1);
-    crit->trand1->min = 3;
-    crit->trand1->max = 30;
+    crit->trand1->min = 10;
+    crit->trand1->max = 100;
 
     sp_metro_init(sp, crit->metro);
     crit->metro->freq = 10;
     
     sp_trand_init(sp, crit->trand2);
-    crit->trand2->min = 800;
+    crit->trand2->min = 500;
     crit->trand2->max = 3000;
     
     sp_osc_init(sp, crit->fm, ft, 0);
@@ -69,14 +69,14 @@ int sp_critter_init(sp_data *sp, sp_critter *crit, sp_ftbl *ft)
     crit->fm->amp = 0.25;
 
     sp_randi_init(sp, crit->randi1);
-    crit->randi1->min = 0.4;
-    crit->randi1->max = 0.99;
+    crit->randi1->min = 0.1;
+    crit->randi1->max = 0.6;
     crit->randi1->cps = 1;
 
     sp_randi_init(sp, crit->randi2);
-    crit->randi2->min = 0.001;
-    crit->randi2->max = 0.4;
-    crit->randi2->cps = 7;
+    crit->randi2->min = 0.01;
+    crit->randi2->max = 0.3;
+    crit->randi2->cps = 10;
 
     sp_vdelay_init(sp, crit->vdelay, 1.0);
 

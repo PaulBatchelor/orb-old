@@ -196,7 +196,7 @@ static void level5(orb_data *orb)
     
     orb->id[1] = orb_object_add_square(orb, &orb->list, 13, 4);
 
-    fsm_init(&orb->fs, 0);
+    fsm_init(&orb->fs, 1);
 
     fsm_assign_id(&orb->fs, 1, orb->id[1]);
     orb_object_set_fsm_pos(orb, orb->id[1], 1);
