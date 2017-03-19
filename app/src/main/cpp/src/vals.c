@@ -64,7 +64,7 @@ void orb_synth_collide(orb_data *orb, orb_object *obj)
             break;
         case ORB_AVOIDSQUARE:
             sp_modal_type(m, 2);
-            sp_modal_scale(m, amp);
+            sp_modal_scale(m, amp * 0.4);
             break;
     }
 
