@@ -52,7 +52,7 @@ int sp_critter_init(sp_data *sp, sp_critter *crit, sp_ftbl *ft)
     crit->tenvx->rel = 0.001;
 
     sp_trand_init(sp, crit->trand1);
-    crit->trand1->min = 10;
+    crit->trand1->min = 3;
     crit->trand1->max = 30;
 
     sp_metro_init(sp, crit->metro);
