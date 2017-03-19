@@ -16,7 +16,7 @@
 #include "nanovg.h"
 
 #include "orb.h"
-#define STARTING_LEVEL 5
+#define STARTING_LEVEL 0
 
 static void orb_draw_bars(NVGcontext *vg, orb_data *orb)
 {
@@ -181,7 +181,7 @@ void orb_collide(orb_data *orb,
     orb_synth_collide(orb, obj);
     orb_fsm_update(orb);
 
-    if(fsm_get_state(&orb->fs) == 0) {
+    if(fsm_get_state(&orb->fs) == 0 && orb->mode == ORB_MODE_PLAY) {
         orb_level_next(orb);
         orb->mode = ORB_MODE_FADE;
         orb->fade = -0.5;

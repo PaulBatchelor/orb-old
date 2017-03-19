@@ -21,7 +21,7 @@ typedef struct sp_synth sp_synth;
 #endif
 
 #define CSTACK_MAX 8
-#define OBJECTS_MAX 8
+#define OBJECTS_MAX 16
 /* 9 x 16 */
 #define GRID_SIZE 144
 #define GRID_WIDTH 16 
@@ -130,7 +130,7 @@ struct orb_data {
     struct timeval tv;
     double dtime;
     orb_object_list list;
-    int id[12];
+    int id[OBJECTS_MAX];
     fsm_data fs;
     int mode;
     double wait;

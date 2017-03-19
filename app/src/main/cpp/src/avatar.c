@@ -3,7 +3,7 @@
 #include "nanovg.h"
 #include "orb.h"
 
-#define POKE_AMT 1.4
+#define POKE_AMT 2.0
 
 void orb_avatar_poke(
     orb_data *orb,
