@@ -116,7 +116,8 @@ int sp_modal_compute(sp_data *sp, sp_modal *m, SPFLOAT *in, SPFLOAT *out)
 
     col *= 0.5;
 
-    sp_dcblock_compute(sp, m->dc, &col, out);
+    *out = col;
+    //sp_dcblock_compute(sp, m->dc, &col, out);
     return SP_OK;
 }
 
