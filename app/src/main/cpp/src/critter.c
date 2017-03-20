@@ -119,8 +119,9 @@ int sp_critter_compute(sp_data *sp, sp_critter *crit, SPFLOAT *in, SPFLOAT *out)
     sp_osc_compute(sp, crit->fm, NULL, &fm);
     fm = fm * tenvx * tenv;
 
-
-    sp_randi_compute(sp, crit->randi1, NULL, &randi1);
+    /* for now the feedback randi is disabled for less glitches on huawei */
+    //sp_randi_compute(sp, crit->randi1, NULL, &randi1);
+    randi1 = 0.6;
     sp_randi_compute(sp, crit->randi2, NULL, &randi2);
 
     delay_in = fm + crit->prev * randi1;

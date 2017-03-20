@@ -170,7 +170,7 @@ static void level4(orb_data *orb)
     fsm_set_state(&orb->fs, 24);
     orb_fsm_update(orb);
 
-    orb_synth_set_notes(orb, 50, 64, 69);
+    orb_synth_set_notes(orb, 50, 64, 71);
     orb_object_set_note(orb, orb->id[0], 78);
     orb_object_set_note(orb, orb->id[1], 74);
     orb_object_set_note(orb, orb->id[2], 71);
