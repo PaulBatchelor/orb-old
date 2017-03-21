@@ -170,10 +170,10 @@ static void level4(orb_data *orb)
     fsm_set_state(&orb->fs, 24);
     orb_fsm_update(orb);
 
-    orb_synth_set_notes(orb, 50, 64, 71);
-    orb_object_set_note(orb, orb->id[0], 78);
+    orb_synth_set_notes(orb, 50, 64, 67);
+    orb_object_set_note(orb, orb->id[0], 77);
     orb_object_set_note(orb, orb->id[1], 74);
-    orb_object_set_note(orb, orb->id[2], 71);
+    orb_object_set_note(orb, orb->id[2], 72);
     orb_object_set_note(orb, orb->id[3], 76);
     orb_object_set_note(orb, orb->id[4], 69);
 
@@ -205,7 +205,7 @@ static void level5(orb_data *orb)
     orb_fsm_update(orb);
 
     orb_synth_set_notes(orb, 62, 67, 74);
-    orb_object_set_note(orb, orb->id[1], 75);
+    orb_object_set_note(orb, orb->id[1], 79);
 
     orb_avatar_set_pos(orb, &orb->av, 1, 4);
     orb_color_set(orb, nvgRGB(195, 254, 104), nvgRGB(85, 98, 112));
