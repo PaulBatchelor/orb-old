@@ -46,24 +46,13 @@ int main(int argc, char *argv[])
     uint32_t s;
     fsm_create(&fsm, 5);
 
-    fsm_init(&fsm, 5);
+    fsm_init(&fsm, 3);
 
     fsm_add_rule(&fsm, 1, 2);
-
-    fsm_add_rule(&fsm, 2, 3);
-    fsm_add_rule(&fsm, 2, 5);
-
+    fsm_add_rule(&fsm, 1, 3);
+    fsm_add_rule(&fsm, 2, 1);
     fsm_add_rule(&fsm, 3, 1);
-    fsm_add_rule(&fsm, 3, 4);
 
-    fsm_add_rule(&fsm, 4, 1);
-    fsm_add_rule(&fsm, 4, 3);
-    fsm_add_rule(&fsm, 4, 2);
-
-    fsm_add_rule(&fsm, 5, 1);
-    fsm_add_rule(&fsm, 5, 2);
-    fsm_add_rule(&fsm, 5, 3);
-    fsm_add_rule(&fsm, 5, 4);
 
     fsm_compute_matrix(&fsm);
     fsm_compute_minpaths(&fsm);
