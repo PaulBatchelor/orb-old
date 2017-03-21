@@ -259,6 +259,59 @@ static void level6(orb_data *orb)
     orb_color_set(orb, nvgRGB(254, 124, 147), nvgRGB(70, 189, 228));
 }
 
+static void level7(orb_data *orb)
+{
+    orb_object_list_init(orb, &orb->list);
+
+    
+    orb->id[0] = orb_object_add_square(orb, &orb->list, 14, 4);
+    orb->id[1] = orb_object_add_square(orb, &orb->list, 1, 4);
+    orb->id[2] = orb_object_add_square(orb, &orb->list, 5, 1);
+    orb->id[3] = orb_object_add_square(orb, &orb->list, 5, 4);
+    
+    orb->id[4] = orb_object_add_avoidsquare(orb, &orb->list, 12, 4);
+    orb->id[5] = orb_object_add_avoidsquare(orb, &orb->list, 12, 2);
+    orb->id[6] = orb_object_add_avoidsquare(orb, &orb->list, 12, 6);
+    orb->id[7] = orb_object_add_avoidsquare(orb, &orb->list, 3, 4);
+
+    fsm_init(&orb->fs, 4);
+
+    fsm_assign_id(&orb->fs, 1, orb->id[0]);
+    orb_object_set_fsm_pos(orb, orb->id[0], 1);
+
+    fsm_assign_id(&orb->fs, 2, orb->id[1]);
+    orb_object_set_fsm_pos(orb, orb->id[1], 2);
+
+    fsm_assign_id(&orb->fs, 3, orb->id[2]);
+    orb_object_set_fsm_pos(orb, orb->id[2], 3);
+
+    fsm_assign_id(&orb->fs, 4, orb->id[3]);
+    orb_object_set_fsm_pos(orb, orb->id[3], 4);
+    
+    fsm_add_rule(&orb->fs, 1, 4);
+    fsm_add_rule(&orb->fs, 2, 1);
+
+    fsm_add_rule(&orb->fs, 3, 1);
+    fsm_add_rule(&orb->fs, 3, 2);
+    fsm_add_rule(&orb->fs, 3, 4);
+    
+    fsm_add_rule(&orb->fs, 4, 2);
+    fsm_add_rule(&orb->fs, 4, 3);
+    
+
+    fsm_set_state(&orb->fs, 4);
+    orb_fsm_update(orb);
+
+    orb_synth_set_notes(orb, 62, 65, 72);
+    orb_object_set_note(orb, orb->id[0], 77);
+    orb_object_set_note(orb, orb->id[1], 81);
+    orb_object_set_note(orb, orb->id[2], 82);
+    orb_object_set_note(orb, orb->id[3], 84);
+
+    orb_avatar_set_pos(orb, &orb->av, 5, 7);
+    orb_color_set(orb, nvgRGB(181, 168, 180), nvgRGB(226, 232, 206));
+}
+
 void orb_level_init(orb_data *orb)
 {
     orb->lvl = 0;
@@ -269,6 +322,7 @@ void orb_level_init(orb_data *orb)
     orb->level[4] = level4;
     orb->level[5] = level5;
     orb->level[6] = level6;
+    orb->level[7] = level7;
 }
 
 void orb_level_next(orb_data *orb)

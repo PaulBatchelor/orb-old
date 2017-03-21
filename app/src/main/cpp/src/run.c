@@ -16,7 +16,7 @@
 #include "nanovg.h"
 
 #include "orb.h"
-#define STARTING_LEVEL 5
+#define STARTING_LEVEL 7
 
 static void orb_draw_bars(NVGcontext *vg, orb_data *orb)
 {
@@ -172,7 +172,7 @@ void orb_collide(orb_data *orb,
         case ORB_AVOIDSQUARE:
             orb_color_blood(orb);
             orb_motion_repel(orb, &orb->motion, 1.3);
-            orb_synth_collide(orb, obj);
+            if(orb->mode == ORB_MODE_PLAY) orb_synth_collide(orb, obj);
             orb->mode = ORB_MODE_FADE;
             orb->fade = -0.5;
             return;

@@ -27,7 +27,7 @@ typedef struct sp_synth sp_synth;
 #define GRID_WIDTH 16 
 #define GRID_HEIGHT 9 
 
-#define NLEVELS 7
+#define NLEVELS 8
 
 typedef struct orb_data orb_data;
 
