@@ -251,8 +251,8 @@ static void level6(orb_data *orb)
 
     orb_synth_set_notes(orb, 63, 65, 70);
     orb_object_set_note(orb, orb->id[1], 84);
-    orb_object_set_note(orb, orb->id[11], 82);
-    orb_object_set_note(orb, orb->id[12], 79);
+    orb_object_set_note(orb, orb->id[11], 79);
+    orb_object_set_note(orb, orb->id[12], 82);
 
     orb_avatar_center_x(orb, &orb->av);
     orb_avatar_center_y(orb, &orb->av);

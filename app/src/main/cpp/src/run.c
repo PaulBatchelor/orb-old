@@ -16,7 +16,7 @@
 #include "nanovg.h"
 
 #include "orb.h"
-#define STARTING_LEVEL 8
+#define STARTING_LEVEL 0
 
 static void orb_draw_bars(NVGcontext *vg, orb_data *orb)
 {

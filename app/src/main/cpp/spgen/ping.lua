@@ -120,7 +120,7 @@ function (syn)
     -- Copy to temp variable and scale
 
     --SP:var_copy(tmp, modal)
-    SP:var_scale(tmp, 0.25)
+    SP:var_scale(tmp, 0.21)
     SP:add(tmp, tmp, modal)
     SP:var_scale(tmp, 0.3)
     
