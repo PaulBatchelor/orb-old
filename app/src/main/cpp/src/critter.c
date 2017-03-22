@@ -43,7 +43,7 @@ int sp_critter_init(sp_data *sp, sp_critter *crit, sp_ftbl *ft)
 {
     sp_tenv_init(sp, crit->tenv);
     crit->tenv->atk = 0.01;
-    crit->tenv->hold = 0.1;
+    crit->tenv->hold = 0.05;
     crit->tenv->rel = 0.01;
     
     sp_tenvx_init(sp, crit->tenvx);
@@ -52,15 +52,15 @@ int sp_critter_init(sp_data *sp, sp_critter *crit, sp_ftbl *ft)
     crit->tenvx->rel = 0.001;
 
     sp_trand_init(sp, crit->trand1);
-    crit->trand1->min = 10;
-    crit->trand1->max = 120;
+    crit->trand1->min = 20;
+    crit->trand1->max = 60;
 
     sp_metro_init(sp, crit->metro);
     crit->metro->freq = 10;
     
     sp_trand_init(sp, crit->trand2);
     crit->trand2->min = 1000;
-    crit->trand2->max = 3000;
+    crit->trand2->max = 4000;
     
     sp_osc_init(sp, crit->fm, ft, 0);
     //crit->fm->car = 1;
@@ -74,7 +74,7 @@ int sp_critter_init(sp_data *sp, sp_critter *crit, sp_ftbl *ft)
     crit->randi1->cps = 1;
 
     sp_randi_init(sp, crit->randi2);
-    crit->randi2->min = 0.01;
+    crit->randi2->min = 0.05;
     crit->randi2->max = 0.3;
     crit->randi2->cps = 10;
 
@@ -132,7 +132,7 @@ int sp_critter_compute(sp_data *sp, sp_critter *crit, SPFLOAT *in, SPFLOAT *out)
 
     crit->prev = delay_out;
 
-    *out = delay_out * 0.5 + fm;
+    *out = delay_out * 0.3 + fm;
     //*out = fm;
     return SP_OK;
 }
